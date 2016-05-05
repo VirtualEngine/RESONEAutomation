@@ -55,7 +55,6 @@ configuration ROADispatcher {
     elseif ($Version -notmatch '^\d+\.\d+\.\d+\.\d+$') {
         throw "$resourceName : The specified version '$Version' does not match '1.2.3.4' format.";
     }
-    
 
     if (-not $IsLiteralPath) {
         [System.Version] $Version = $Version;
@@ -78,6 +77,13 @@ configuration ROADispatcher {
         ## Determine whether we're on the RTM release
         if ($Version.Build -eq 0) { $msiProductName = '{0} Dispatcher+' -f $msiProductName; }
         else { $msiProductName = '{0} SR{1} Dispatcher+' -f $msiProductName, $Version.Build; }
+
+        ## Product name changed in SR3, i.e. 'RES ONE Automation 2015 SR3 Dispatcher+(x64) '
+        if ($Version.Major -eq 7 -and $Version.Minor -eq 5 -and $Version.Build -ge 3) {
+            ## NOTE: THERE IS A SPACE ON THE END OF THE PRODUCT NAME?!
+            $msiProductName = '{0}({1}) ' -f $msiProductName, $Architecture;
+        }
+        
         $Path = Join-Path -Path $Path -ChildPath $setup;
     }
 
