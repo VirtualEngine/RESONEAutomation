@@ -2,7 +2,7 @@ $moduleRoot = Split-Path -Path $MyInvocation.MyCommand.Path -Parent;
 
 ## Import the ROACommon library functions
 $moduleParent = Split-Path -Path $moduleRoot -Parent;
-Import-Module (Join-Path -Path $moduleParent -ChildPath 'VE_ROACommon');
+Import-Module (Join-Path -Path $moduleParent -ChildPath 'VE_ROACommon') -Force;
 
 ## Dot source all (nested) .ps1 files in the folder, excluding Pester tests
 Get-ChildItem -Path $moduleRoot -Include *.ps1 -Recurse |

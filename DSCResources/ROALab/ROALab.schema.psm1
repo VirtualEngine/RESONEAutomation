@@ -41,7 +41,7 @@ configuration ROALab {
         [System.String] $Ensure = 'Present'
     )
 
-    Import-DscResource -ModuleName xPSDesiredStateConfiguration;
+    Import-DscResource -ModuleName xPSDesiredStateConfiguration, xNetworking;
     
     ## Can't import RESONEServiceStore composite resource due to circular references!
     Import-DscResource -Name ROADatabase, ROADispatcher, ROADatabaseAgent;
@@ -52,6 +52,7 @@ configuration ROALab {
     }
 
     if ($Ensure -eq 'Present') {
+        
         ROADatabase 'ROALabDatabase' {
             DatabaseServer = $DatabaseServer;
             DatabaseName = $DatabaseName;
@@ -85,8 +86,10 @@ configuration ROALab {
             IsLiteralPath = $false;
             DependsOn = '[ROADispatcher]ROALabDispatcher';
         }
+        
     }
     elseif ($Ensure -eq 'Absent') {
+        
         ROADatabaseAgent 'ROALabDatabaseAgent' {
             DatabaseServer = $DatabaseServer;
             DatabaseName = $DatabaseName;
@@ -120,6 +123,20 @@ configuration ROALab {
             Ensure = $Ensure;
             DependsOn = '[ROADispatcher]ROALabDispatcher';
         }
+    
+}
+    
+    xFirewall 'ROALabDispatcherFirewall' {
+        Name = 'RES Automation Manager Dispatcher';
+        Action = 'Allow';
+        Direction = 'Inbound';
+        DisplayName = 'RES Automation Manager Dispatcher';
+        Enabled = $true;
+        Profile = 'Any';
+        Program = 'C:\Program Files\RES Software\Automation Manager\Dispatcher\Dispatcher.exe'
+        Description = 'RES ONE Automation Dispatcher Service';
+        Ensure = $Ensure;
+        DependsOn = '[ROADispatcher]ROALabDispatcher';
     }
 
 } #end configuration ROALab
