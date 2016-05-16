@@ -8,6 +8,9 @@ RES ONE Automation DSC Resources
 * **ROADispatcher**: Deploys a RES ONE Automation Dispatcher
 * **ROALab**: Deploys a single-node RES ONE Automation lab server environment
 
+## Required Resources
+* **xNetworking**: ROALab requires https://github.com/PowerShell/xNetworking to create firewall rules
+
 ROAAgent
 ========
 Deploys a RES ONE Automation agent.

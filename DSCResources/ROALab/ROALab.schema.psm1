@@ -124,17 +124,34 @@ configuration ROALab {
             DependsOn = '[ROADispatcher]ROALabDispatcher';
         }
     
-}
+    }
     
-    xFirewall 'ROALabDispatcherFirewall' {
-        Name = 'RES Automation Manager Dispatcher';
+    xFirewall 'RESONEAutomationFirewall' {
+        Name = 'RESONEAutomation-TCP-3163-In';
+        Group = 'RES ONE Automation';
+        DisplayName = 'RES ONE Automation (Dispatcher)';
         Action = 'Allow';
         Direction = 'Inbound';
-        DisplayName = 'RES Automation Manager Dispatcher';
         Enabled = $true;
         Profile = 'Any';
-        Program = 'C:\Program Files\RES Software\Automation Manager\Dispatcher\Dispatcher.exe'
+        Protocol = 'TCP';
+        LocalPort = 3163;
         Description = 'RES ONE Automation Dispatcher Service';
+        Ensure = $Ensure;
+        DependsOn = '[ROADispatcher]ROALabDispatcher';
+    }
+
+    xFirewall 'RESONEAutomationDiscoveryFirewall' {
+        Name = 'RESONEAutomation-UDP-3163-In';
+        Group = 'RES ONE Automation';
+        DisplayName = 'RES ONE Automation (Dispatcher Discovery)';
+        Action = 'Allow';
+        Direction = 'Inbound';
+        Enabled = $true;
+        Profile = 'Any';
+        Protocol = 'UDP';
+        LocalPort = 3163;
+        Description = 'RES ONE Automation Dispatcher Service Discovery';
         Ensure = $Ensure;
         DependsOn = '[ROADispatcher]ROALabDispatcher';
     }
