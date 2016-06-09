@@ -9,123 +9,17 @@ data LocalizedData
         WaitingForProcessToExit         = Waiting for process id '{0}' to exit.
         ProcessExited                   = Process id '{0}' exited with code '{1}'.
         OpeningMSIDatabase              = Opening MSI database '{0}'.
+        SearchFilePatternMatch          = Searching for files matching pattern '{0}'.
+        LocatedPackagePath              = Located package '{0}'.
+
+        VersionNumberRequiredError      = Version number is required when not using a literal path.
+        SpecifedPathTypeError           = Specified path '{0}' does not point to a '{1}' file.
+        InvalidVersionNumberFormatError = The specified version '{0}' does not match '1.2', '1.2.3' or '1.2.3.4' format.
+        UnsupportedVersionError         = Version '{0}' is not supported/untested :(
+        UnableToLocatePackageError      = Unable to locate '{0}' package.
 '@
 }
 
-function ResolveProductName {
-<#
-    .SYNOPSIS
-        Resolves the RES ONE Automation agent to the correct product name.
-#>
-    [CmdletBinding()]
-    param (
-        ## RES ONE Automation component version to be installed, i.e. 8.0.3.0
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
-        [System.String] $Version,
-
-        [Parameter(Mandatory)] [ValidateSet('Console','Dispatcher','Agent')]
-        [System.String] $Component
-    )
-
-    [System.Version] $Version = $Version;
-    switch ($Version.Major) {
-        7 {
-            if ($Version.Minor -eq 0) {
-                $msiProductName = 'RES Automation Manager 2014';
-            }
-            elseif ($Version.Minor -eq 5) {
-                $msiProductName = 'RES ONE Automation 2015';
-            }
-        }
-        Default {
-            throw "Version '$($Version.Tostring())' is not currently supported :(.";
-        }
-    } #end switch version
-    
-    switch ($Component) {
-        'Console' {
-            ## Determine whether we're on the RTM release
-            if ($Version.Build -eq 0) {
-                $msiProductName = '{0}' -f $msiProductName;
-            }
-            else {
-                $msiProductName = '{0} SR{1}' -f $msiProductName, $Version.Build;
-            }
-        }
-        'Dispatcher' {
-            if ($Version.Build -eq 0) {
-                $msiProductName = '{0} Dispatcher+' -f $msiProductName;
-            }
-            else {
-                $msiProductName = '{0} SR{1} Dispatcher+' -f $msiProductName, $Version.Build;
-            }
-        }
-        Default { #Agent
-            if ($Version.Build -eq 0) {
-                $msiProductName = '{0} {1}' -f $msiProductName, $Component;
-            }
-            else {
-                $msiProductName = '{0} SR{1} {2}' -f $msiProductName, $Version.Build, $Component;
-            }
-        } #end Default
-
-    } #end switch component
-        
-    return $msiProductName;
-
-} #end function ResolveProductName
-
-function ResolveSetupPath {
-<#
-    .SYNOPSIS
-        Resolves the RES ONE Automation agent to the correct .msi
-#>
-    [CmdletBinding()]
-    param (
-        ## File path containing the RES ONE Automation MSIs or the literal path to the Agent MSI.
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
-        [System.String] $Path,
-
-        ## RES ONE Automation component version to be installed, i.e. 8.0.3.0
-        [Parameter()] [ValidateNotNullOrEmpty()]
-        [System.String] $Version,
-        
-        ## The specified Path is a literal file reference (bypasses the $Versioncheck).
-        [Parameter()] [ValidateNotNull()]
-        [System.Management.Automation.SwitchParameter] $IsLiteralPath,
-
-        [Parameter(Mandatory)] [ValidateSet('Agent')]
-        [System.String] $Component,
-
-        ## Catch-all to permit splatting
-        [Parameter(ValueFromRemainingArguments)] $Arguments
-    )
-
-    if (-not $IsLiteralPath) {
-        [System.Version] $Version = $Version;
-        
-        switch ($Component) {
-            'Agent' {
-                switch ($Version.Major) {
-                    7 {
-                        if ($Version.Minor -eq 0) {
-                            $setup = 'RES-AM-Agent-{0}.msi' -f $Version.ToString();
-                        }
-                        elseif ($Version.Minor -eq 5) {
-                            $setup = 'RES-ONE-Automation-Agent-{0}.msi' -f $Version.ToString();
-                        }
-                    }
-                    Default {
-                        throw "Version '$($Version.Tostring())' is not currently supported :(.";
-                    }
-                }
-                $Path = Join-Path -Path $Path -ChildPath $setup;
-            }
-        } #end switch component
-    } #end if not literal path
-    
-    return $Path;
-} #end function ResolveSetupPath
 
 function GetWindowsInstallerPackageProperty {
 <#
@@ -140,35 +34,46 @@ function GetWindowsInstallerPackageProperty {
     [OutputType([System.String])]
     param (
         [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName='Path')]
-        [ValidateNotNullOrEmpty()] [Alias('PSPath','FullName')] [System.String] $Path,
+        [ValidateNotNullOrEmpty()] [Alias('PSPath','FullName')]
+        [System.String] $Path,
         
         [Parameter(Mandatory, Position = 0, ValueFromPipelineByPropertyName, ParameterSetName = 'LiteralPath')]
-        [ValidateNotNullOrEmpty()] [System.String] $LiteralPath,
+        [ValidateNotNullOrEmpty()]
+        [System.String] $LiteralPath,
 
-        [Parameter(Position = 1, ValueFromPipelineByPropertyName)]        [ValidateSet('ProductCode', 'ProductVersion', 'ProductName', 'UpgradeCode')] [System.String] $Property = 'ProductCode'
+        [Parameter(Position = 1, ValueFromPipelineByPropertyName)]
+        [ValidateSet('ProductCode', 'ProductVersion', 'ProductName', 'UpgradeCode')]
+        [System.String] $Property = 'ProductCode'
     )
     begin {
+        
         if ($PSCmdlet.ParameterSetName -eq 'Path') {
             $LiteralPath += $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path);
-        } # end if
+        }
+
     } #end begin
     process {
+        
         $windowsInstaller = New-Object -ComObject WindowsInstaller.Installer;
         Write-Verbose -Message ($localizedData.OpeningMSIDatabase -f $LiteralPath);
         try {
+        
             $msiDatabase = $windowsInstaller.GetType().InvokeMember('OpenDatabase', 'InvokeMethod', $null, $windowsInstaller, @("$LiteralPath", 0));
-            $query = "SELECT Value FROM Property WHERE Property = '$Property'";
+            $query = "SELECT Value FROM Property WHERE Property = '{0}'" -f $Property;
             $view = $msiDatabase.GetType().InvokeMember('OpenView', 'InvokeMethod', $null, $msiDatabase, $query);
             $view.GetType().InvokeMember('Execute', 'InvokeMethod', $null, $view, $null);
             $record = $view.GetType().InvokeMember('Fetch','InvokeMethod', $null, $view, $null);
             $value = $record.GetType().InvokeMember('StringData', 'GetProperty', $null, $record, 1);
             return $value;
+
         } 
         catch {
             throw;
         }
+
     } #end process
 } #end function Get-WindowsInstallerPackageProperty
+
 
 function StartWaitProcess {
 <#
@@ -199,6 +104,7 @@ function StartWaitProcess {
         [System.String] $WorkingDirectory = (Split-Path -Path $FilePath -Parent)
     )
     process {
+
         $startProcessParams = @{
             FilePath = $FilePath;
             WorkingDirectory = $WorkingDirectory;
@@ -206,18 +112,23 @@ function StartWaitProcess {
             PassThru = $true;
         };
         $displayParams = '<None>';
+
         if ($ArgumentList) {
             $displayParams = [System.String]::Join(' ', $ArgumentList);
             $startProcessParams['ArgumentList'] = $ArgumentList;
         }
+
         Write-Verbose ($localizedData.StartingProcess -f $FilePath, $displayParams);
+
         if ($Credential) {
             Write-Verbose ($localizedData.StartingProcessAs -f $Credential.UserName);
             $startProcessParams['Credential'] = $Credential;
         }
+
         if ($PSCmdlet.ShouldProcess($FilePath, 'Start Process')) {
             $process = Start-Process @startProcessParams -ErrorAction Stop;
         }
+
         if ($PSCmdlet.ShouldProcess($FilePath, 'Wait Process')) {
             Write-Verbose ($localizedData.ProcessLaunched -f $process.Id);
             Write-Verbose ($localizedData.WaitingForProcessToExit -f $process.Id);
@@ -226,8 +137,10 @@ function StartWaitProcess {
             Write-Verbose ($localizedData.ProcessExited -f $process.Id, $exitCode);
         }
         return $exitCode;
+        
     } #end process
 } #end function StartWaitProcess
+
 
 function GetRAMSiteLicense {
 <#
@@ -269,6 +182,7 @@ function GetRAMSiteLicense {
     }
 } #end function GetRAMSiteLicense
 
+
 function GetProductEntry {
 <#
     .NOTES
@@ -298,10 +212,10 @@ function GetProductEntry {
     $uninstallKeyWow64 = 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall';
 
     if ($IdentifyingNumber) {
-        $keyLocation = "$uninstallKey\$identifyingNumber";
+        $keyLocation = '{0}\{1}' -f $uninstallKey, $identifyingNumber;
         $item = Get-Item $keyLocation -ErrorAction SilentlyContinue;
         if (-not $item) {
-            $keyLocation = "$uninstallKeyWow64\$identifyingNumber";
+            $keyLocation = '{0}\{1}' -f $uninstallKeyWow64, $identifyingNumber;
             $item = Get-Item $keyLocation -ErrorAction SilentlyContinue;
         }
         return $item;
@@ -315,13 +229,19 @@ function GetProductEntry {
 
     if ($InstalledCheckRegKey -and $InstalledCheckRegValueName -and $InstalledCheckRegValueData) {
         $installValue = $null;
+        $getRegistryValueIgnoreErrorParams = @{
+            RegistryHive = $InstalledCheckRegHive;
+            Key = $InstalledCheckRegKey;
+            Value = $InstalledCheckRegValueName;
+        }
+
         #if 64bit OS, check 64bit registry view first
-        if ((Get-WmiObject -Class Win32_OperatingSystem -ComputerName 'localhost' -ErrorAction SilentlyContinue).OSArchitecture -eq '64-bit') {
-            $installValue = GetRegistryValueIgnoreError $InstalledCheckRegHive "$InstalledCheckRegKey" "$InstalledCheckRegValueName" Registry64;
+        if ([System.Environment]::Is64BitOperatingSystem) {
+            $installValue = GetRegistryValueIgnoreError @getRegistryValueIgnoreErrorParams -RegistryView [Microsoft.Win32.RegistryView]::Registry64;
         }
 
         if ($installValue -eq $null) {
-            $installValue = GetRegistryValueIgnoreError $InstalledCheckRegHive "$InstalledCheckRegKey" "$InstalledCheckRegValueName" Registry32;
+            $installValue = GetRegistryValueIgnoreError @getRegistryValueIgnoreErrorParams -RegistryView [Microsoft.Win32.RegistryView]::Registry32;
         }
 
         if ($installValue) {
@@ -334,6 +254,7 @@ function GetProductEntry {
     return $null;
 } #end function GetProductEntry
 
+
 function GetRegistryValueIgnoreError {
 <#
     .NOTES
@@ -341,7 +262,7 @@ function GetRegistryValueIgnoreError {
 #>
 
     param (
-        [arameter(Mandatory)]
+        [Parameter(Mandatory)]
         [Microsoft.Win32.RegistryHive] $RegistryHive,
 
         [Parameter(Mandatory)] 
@@ -363,10 +284,11 @@ function GetRegistryValueIgnoreError {
     }
     catch {
         $exceptionText = ($_ | Out-String).Trim();
-        Write-Verbose "Exception occured in Get-RegistryValueIgnoreError: $exceptionText";
+        Write-Verbose "Exception occured in GetRegistryValueIgnoreError: $exceptionText";
     }
     return $null;
 } #end function GetRegistryValueIgnoreError
+
 
 function GetLocalizableRegKeyValue {
 <#
@@ -388,3 +310,158 @@ function GetLocalizableRegKeyValue {
     }
     return $res;
 } #end function GetLocalizableRegKeyValue
+
+
+function ResolveROAPackagePath {
+<#
+    .SYNOPSIS
+        Resolves the latest RES ONE Automation/Automation Manager installation package.
+#>
+    [CmdletBinding()]
+    param (
+        ## The literal file path or root search path
+        [Parameter(Mandatory)]  [ValidateNotNullOrEmpty()]
+        [System.String] $Path,
+        
+        ## Required RES ONE Automation/Automation Manager component
+        [Parameter(Mandatory)] [ValidateSet('Console','Dispatcher','Agent','Installer')]
+        [System.String] $Component,
+        
+        ## RES ONE Automation component version to be installed, i.e. 7.0.4 or 7.5.3.1
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [System.String] $Version,
+        
+        ## The specified Path is a literal file reference (bypasses the Version check).
+        [Parameter()]
+        [System.Boolean] $IsLiteralPath
+    )
+
+    if (([System.String]::IsNullOrWhitespace($Version)) -and (-not $IsLiteralPath)) {
+        throw ($localizedData.VersionNumberRequiredError);
+    }
+    elseif ($IsLiteralPath) {
+        if ($Path -notmatch '\.msi$') {
+            throw ($localizedData.SpecifedPathTypeError -f $Path, 'MSI');
+        }
+    }
+    elseif ($Version -notmatch '^\d\.\d\d?(\.\d\d?|\.\d\d?\.\d\d?)?$') {
+         throw ($localizedData.InvalidVersionNumberFormatError -f $Version);
+    }
+
+    if ($IsLiteralPath) {
+        $packagePath = $Path;
+    }
+    else {
+        
+        [System.Version] $productVersion = $Version;
+        
+        switch ($productVersion.Major) {
+        
+            7 {
+        
+                switch ($productVersion.Minor) {
+
+                    ## ProductName is only used by the 'Installer' component, PackageName is used by all other components
+                    
+                    0 {
+                        $packageName = 'RES-AM';
+                        $productName = 'RES-AM-2014';
+                    }
+                    5 {
+                        $packageName = 'RES-ONE-Automation';
+                        $productName = 'RES-ONE-Automation-2015';
+                    }
+                    Default {
+                        throw ($localizedData.UnsupportedVersionError -f $productVersion.ToString());
+                    }
+
+                } #end switch version minor
+            
+            }
+        
+            Default {
+                throw ($localizedData.UnsupportedVersionError -f $productVersion.ToString());
+            }
+        
+        } #end switch version major
+
+        ## Calculate the version search Regex. RES AM uses version numbers in the Console, Agent and Dispatcher MSIs
+        ## This isn't used by the 'Installer' component as that has the SR moniker instead (like RES WM).
+        if (($productVersion.Build -eq -1) -and ($productVersion.Revision -eq -1)) {
+            ## We only have 'Major.Minor'
+            $versionRegex = '{0}.{1}.\S+' -f $productVersion.Major, $productVersion.Minor;
+        }
+        elseif ($productVersion.Revision -eq -1) {
+            ## We have 'Major.Minor.Build'
+            $versionRegex = '{0}.{1}.{2}.\S+' -f $productVersion.Major, $productVersion.Minor, $productVersion.Build;
+        }
+        else {
+            ## We have explicit version.
+            $versionRegex = '{0}.{1}.{2}.{3}' -f $productVersion.Major, $productVersion.Minor, $productVersion.Build, $productVersion.Revision;
+        }
+
+        switch ($Component) {
+
+            'Installer' {
+                
+                ## We need the RES-ONE-Automation-2015-SR3.msi or RES-AM-2014-SR4.msi
+                if ($productVersion.Build -eq 0) {
+                    ## We're after the RTM release, e.g. specified 9.9.0 or 9.10.0
+                    $regex = '{0}.msi' -f $productName;
+                }
+                elseif ($productVersion.Build -ge 1) {
+                    ## We're after a specific SR, e.g. specified 9.9.3 or 9.10.2
+                    $regex = '{0}-SR{1}.msi' -f $productName, $productVersion.Build;
+                }
+                else {
+                    ## Find any
+                    $regex = '{0}(-SR\d)?.msi' -f $productName;
+                }
+
+            }
+            
+            'Agent' {
+                
+                ## RES-ONE-Automation-2015-Agent-7.5.3.1 or RES-AM-Agent-7.0.4.3
+                $regex = '{0}-Agent-{1}.msi' -f $packageName, $versionRegex;
+
+            } #end switch Agent
+
+            'Dispatcher' {
+        
+                $architecture = 'x86';
+                if ([System.Environment]::Is64BitOperatingSystem) {
+                    $architecture = 'x64';
+                }
+                ## RES-ONE-Automation-2015-Dispatcher+(x64)-7.5.3.1 or RES-AM-Dispatcher+(x64)-7.0.4.3
+                $regex = '{0}-Dispatcher\+\({1}\)-{2}.msi' -f $packageName, $architecture, $versionRegex;
+
+            } #end switch Dispatcher
+
+            Default {
+        
+                ## RES-ONE-Automation-2015-Console-7.5.3.1 or RES-AM-Console-7.0.4.3
+                $regex = '{0}-Console-{1}.msi' -f $packageName, $versionRegex;
+
+            } #end switch Console/Database
+    
+        } #end switch component
+
+        Write-Verbose -Message ($localizedData.SearchFilePatternMatch -f $regex);
+
+        $packagePath = Get-ChildItem -Path $Path -Recurse | 
+            Where-Object { $_.Name -imatch $regex } |
+                Sort-Object -Property Name -Descending |
+                    Select-Object -ExpandProperty FullName -First 1;
+    
+        if ((-not $IsLiteralPath) -and (-not [System.String]::IsNullOrEmpty($packagePath))) {
+            Write-Verbose ($localizedData.LocatedPackagePath -f $packagePath);
+            return $packagePath;    
+        }
+        elseif ([System.String]::IsNullOrEmpty($packagePath)) {
+            throw  ($localizedData.UnableToLocatePackageError -f $Component);
+        }
+
+    } #end if
+
+} #end function ResolveROAPackagePath

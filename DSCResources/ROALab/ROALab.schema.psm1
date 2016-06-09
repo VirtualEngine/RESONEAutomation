@@ -33,10 +33,6 @@ configuration ROALab {
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
         [System.String] $Version,
         
-        ## The target node's architecture.
-        [Parameter()] [ValidateSet('x64','x86')]
-        [System.String] $Architecture = 'x64',
-
         [Parameter()] [ValidateSet('Present','Absent')]
         [System.String] $Ensure = 'Present'
     )
@@ -71,7 +67,6 @@ configuration ROALab {
             Version = $Version;
             Credential = $Credential;
             Ensure = $Ensure;
-            Architecture = $Architecture;
             IsLiteralPath = $false;
             DependsOn = '[ROADatabase]ROALabDatabase';
         }
@@ -106,7 +101,6 @@ configuration ROALab {
             Path = $Path;
             Version = $Version;
             Credential = $Credential;
-            Architecture = $Architecture;
             IsLiteralPath = $false;
             Ensure = $Ensure;
             DependsOn = '[ROADatabaseAgent]ROALabDatabaseAgent';

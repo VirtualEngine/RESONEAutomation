@@ -6,10 +6,12 @@ RES ONE Automation DSC Resources
 * **ROADatabase**: Installs the RES ONE Automation console and creates a RES ONE Automation database
 * **ROADatabaseAgent**: Installs a RES ONE Automation Agent, querying the database for the Site Id
 * **ROADispatcher**: Deploys a RES ONE Automation Dispatcher
-* **ROALab**: Deploys a single-node RES ONE Automation lab server environment
+* **ROALab (Composite)**: Deploys a single-node RES ONE Automation server lab environment
+* **ROALabBuildingBlock (Compsite)**: Adds a RES ONE Automation building block
+ * **NOTE: Requires Windows Management Framework 5 with Windows Authentication.**
 
 ## Required Resources
-* **xNetworking**: ROALab requires https://github.com/PowerShell/xNetworking to create firewall rules
+* **xNetworking**: ROALab requires https://github.com/PowerShell/xNetworking to create server firewall rules
 
 ROAAgent
 ========
@@ -66,12 +68,12 @@ ROADatabase [String] #ResourceName
 }
 ```
 
-ROADatabaseAgent
+ROAAgent
 ================
 Installs a RES ONE Automation Agent, querying the database for the Site Id.
 ### Syntax
 ```
-ROADatabaseAgent [String] #ResourceName
+ROAAgent [String] #ResourceName
 {
     DatabaseName = [String]
     DatabaseServer = [String]
@@ -102,14 +104,13 @@ ROADispatcher [String] #ResourceName
     Path = [String]
     [ Version = [String]]
     [ IsLiteralPath = [Boolean] ]
-    [ Architecture = [String] { x64 | x86 } ]
     [ Ensure = [String] { Absent | Present } ]
 }
 
 ```
 
 ROALab
-===========
+======
 Deploys a single-node RES ONE Automation lab server environment. 
 ### Syntax
 ```
@@ -121,7 +122,22 @@ ROALab [String] #ResourceName
     SQLCredential = [PSCredential]
     Path = [String]
     Version = [String]
-    [ Architecture = [String] { x64 | x86 } ]
     [ Ensure = [String] { Absent | Present } ]
 }
+```
+
+ROALabBuildingBlock
+===================
+Adds a RES ONE Automation building block.
+### Syntax
+```
+ROALabBuildingBlock [String] #ResourceName
+{
+    Path = [String]
+    [ Credential = [PSCredential] ]
+    [ UseAutomationAuthentication = [Boolean] ]
+    [ Architecture = [String] { x64 | x86 } ]
+    [ Ensure = [String] { Present } ]
+}
+
 ```
