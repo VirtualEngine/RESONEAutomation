@@ -10,35 +10,44 @@ configuration ROALab {
 #>
     param (
         ## RES ONE Automation database server name/instance (equivalient to DBSERVER).
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $DatabaseServer,
 
         ## RES ONE Automation database name (equivalient to DBNAME).
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $DatabaseName,
-        
+
         ## Microsoft SQL username/password to connect to the RES ONE Automation database (equivalent to DBUSER/DBPASSWORD).
-        [Parameter(Mandatory)] [ValidateNotNull()]
-        [System.Management.Automation.PSCredential] $Credential,
-        
+        [Parameter(Mandatory)]
+        [ValidateNotNull()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential,
+
         ## Microsoft SQL database credentials used to create the database (equivalient to DBCREATEUSER/DBCREATEPASSWORD).
-        [Parameter(Mandatory)] [ValidateNotNull()]
+        [Parameter(Mandatory)]
+        [ValidateNotNull()]
         [System.Management.Automation.PSCredential] $SQLCredential,
-        
+
         ## File path containing the RES ONE Automation MSIs or the literal path to the legacy console/Sync Tool MSI.
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
-         [ValidateNotNullOrEmpty()] [System.String] $Path,
-        
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
+        [System.String] $Path,
+
         ## RES ONE Automation component version to be installed, i.e. 7.5.1.0
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Version,
-        
-        [Parameter()] [ValidateSet('Present','Absent')]
+
+        [Parameter()]
+        [ValidateSet('Present','Absent')]
         [System.String] $Ensure = 'Present'
     )
 
     Import-DscResource -ModuleName xPSDesiredStateConfiguration, xNetworking;
-    
+
     ## Can't import RESONEServiceStore composite resource due to circular references!
     Import-DscResource -Name ROADatabase, ROADispatcher, ROADatabaseAgent;
 
@@ -48,7 +57,7 @@ configuration ROALab {
     }
 
     if ($Ensure -eq 'Present') {
-        
+
         ROADatabase 'ROALabDatabase' {
             DatabaseServer = $DatabaseServer;
             DatabaseName = $DatabaseName;
@@ -59,7 +68,7 @@ configuration ROALab {
             IsLiteralPath = $false;
             Ensure = $Ensure;
         }
-       
+
         ROADispatcher 'ROALabDispatcher' {
             DatabaseServer = $DatabaseServer;
             DatabaseName = $DatabaseName;
@@ -70,7 +79,7 @@ configuration ROALab {
             IsLiteralPath = $false;
             DependsOn = '[ROADatabase]ROALabDatabase';
         }
-        
+
         ROADatabaseAgent 'ROALabDatabaseAgent' {
             DatabaseServer = $DatabaseServer;
             DatabaseName = $DatabaseName;
@@ -81,10 +90,10 @@ configuration ROALab {
             IsLiteralPath = $false;
             DependsOn = '[ROADispatcher]ROALabDispatcher';
         }
-        
+
     }
     elseif ($Ensure -eq 'Absent') {
-        
+
         ROADatabaseAgent 'ROALabDatabaseAgent' {
             DatabaseServer = $DatabaseServer;
             DatabaseName = $DatabaseName;
@@ -105,7 +114,7 @@ configuration ROALab {
             Ensure = $Ensure;
             DependsOn = '[ROADatabaseAgent]ROALabDatabaseAgent';
         }
-        
+
         ROADatabase 'ROALabDatabase' {
             DatabaseServer = $DatabaseServer;
             DatabaseName = $DatabaseName;
@@ -117,9 +126,9 @@ configuration ROALab {
             Ensure = $Ensure;
             DependsOn = '[ROADispatcher]ROALabDispatcher';
         }
-    
+
     }
-    
+
     xFirewall 'RESONEAutomationFirewall' {
         Name = 'RESONEAutomation-TCP-3163-In';
         Group = 'RES ONE Automation';

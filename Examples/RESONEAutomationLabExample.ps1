@@ -16,17 +16,21 @@ configuration RESONEAutomationLabExample {
     param (
         ## RES ONE Automation SQL database/user credential
         [Parameter(Mandatory)]
-        [PSCredential] $Credential,
+        [PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential,
 
         ## Microsoft SQL Server credentials used to create the RES ONE Automation database/user
         [Parameter(Mandatory)]
-        [PSCredential] $SQLCredential
+        [PSCredential]
+        [System.Management.Automation.Credential()]
+        $SQLCredential
     )
 
     Import-DscResource -ModuleName RESONEAutomation;
 
     node 'localhost' {
-        
+
         ROALab 'ROALab' {
             DatabaseServer = $node.ROADatabaseServer;
             DatabaseName = $Node.ROADatabaseName;

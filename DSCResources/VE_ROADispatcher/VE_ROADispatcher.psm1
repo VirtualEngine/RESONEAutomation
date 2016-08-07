@@ -16,51 +16,58 @@ function Get-TargetResource {
     [OutputType([System.Collections.Hashtable])]
     param (
         ## RES ONE Automation database server name/instance (equivalient to DBSERVER).
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $DatabaseServer,
-        
+
         ## RES ONE Automation database name (equivalient to DBNAME).
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $DatabaseName,
-        
+
         ## Microsoft SQL username/password to connect to the database (equivalent to DBUSER/DBPASSWORD).
         [Parameter(Mandatory)]
-        [System.Management.Automation.PSCredential] $Credential,
-        
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential,
+
         ## File path containing the RES ONE Automation MSIs or the literal path to the Dispatcher MSI.
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Path,
 
         ## RES ONE Automation component version to be installed, i.e. 8.0.3.0
-        [Parameter()] [ValidateNotNullOrEmpty()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Version,
-        
+
         ## The specified Path is a literal file reference (bypasses the $Version and $Architecture checks).
         [Parameter()]
         [System.Boolean] $IsLiteralPath,
 
-        [Parameter()] [ValidateSet('Present','Absent')]
+        [Parameter()]
+        [ValidateSet('Present','Absent')]
         [System.String] $Ensure = 'Present'
     )
-    
+
     $setupPath = ResolveROAPackagePath -Path $Path -Component 'Dispatcher' -Version $Version -IsLiteralPath:$IsLiteralPath -Verbose:$Verbose;
     [System.String] $msiProductName = GetWindowsInstallerPackageProperty -Path $setupPath -Property ProductName;
-    
+
     ## Product name appeared to changed in SR3, i.e. 'RES ONE Automation 2015 SR3 Dispatcher+(x64) '
     ## NOTE: THERE IS A SPACE ON THE END OF THE PRODUCT NAME?! Assumption at the moment is this is a one-of..
     [System.String] $msiProductVersion = GetWindowsInstallerPackageProperty -Path $setupPath -Property ProductVersion;
     $productVersion = $msiProductVersion -as [System.Version];
     if (($productVersion.Major -eq 7) -and ($productVersion.Minor -eq 5) -and ($productVersion.Build -eq 3)) {
-        $productName = $msiProductName.TrimStart(); 
+        $productName = $msiProductName.TrimStart();
     }
     else {
         $productName = $msiProductName.Trim();
     }
-    
+
     $targetResource = @{
         Path = $setupPath;
         ProductName = $productName;
-        Ensure = if (GetProductEntry -Name $productName) { 'Present' } else { 'Absent' };       
+        Ensure = if (GetProductEntry -Name $productName) { 'Present' } else { 'Absent' };
     }
     return $targetResource;
 
@@ -72,30 +79,37 @@ function Test-TargetResource {
     [OutputType([System.Boolean])]
     param (
         ## RES ONE Automation database server name/instance (equivalient to DBSERVER).
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $DatabaseServer,
-        
+
         ## RES ONE Automation database name (equivalient to DBNAME).
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $DatabaseName,
-        
+
         ## Microsoft SQL username/password to connect to the database (equivalent to DBUSER/DBPASSWORD).
         [Parameter(Mandatory)]
-        [System.Management.Automation.PSCredential] $Credential,
-        
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential,
+
         ## File path containing the RES ONE Automation MSIs or the literal path to the Dispatcher MSI.
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Path,
 
         ## RES ONE Automation component version to be installed, i.e. 8.0.3.0
-        [Parameter()] [ValidateNotNullOrEmpty()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Version,
-        
+
         ## The specified Path is a literal file reference (bypasses the $Version and $Architecture checks).
         [Parameter()]
         [System.Boolean] $IsLiteralPath,
 
-        [Parameter()] [ValidateSet('Present','Absent')]
+        [Parameter()]
+        [ValidateSet('Present','Absent')]
         [System.String] $Ensure = 'Present'
     )
 
@@ -115,38 +129,46 @@ function Test-TargetResource {
 
 function Set-TargetResource {
     [CmdletBinding()]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     param (
         ## RES ONE Automation database server name/instance (equivalient to DBSERVER).
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $DatabaseServer,
-        
+
         ## RES ONE Automation database name (equivalient to DBNAME).
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $DatabaseName,
-        
+
         ## Microsoft SQL username/password to connect to the database (equivalent to DBUSER/DBPASSWORD).
         [Parameter(Mandatory)]
-        [System.Management.Automation.PSCredential] $Credential,
-        
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential,
+
         ## File path containing the RES ONE Automation MSIs or the literal path to the Dispatcher MSI.
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Path,
 
         ## RES ONE Automation component version to be installed, i.e. 8.0.3.0
-        [Parameter()] [ValidateNotNullOrEmpty()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Version,
-        
+
         ## The specified Path is a literal file reference (bypasses the $Version and $Architecture checks).
         [Parameter()]
         [System.Boolean] $IsLiteralPath,
 
-        [Parameter()] [ValidateSet('Present','Absent')]
+        [Parameter()]
+        [ValidateSet('Present','Absent')]
         [System.String] $Ensure = 'Present'
     )
-    
+
     $setupPath = ResolveROAPackagePath -Path $Path -Component 'Dispatcher' -Version $Version -IsLiteralPath:$IsLiteralPath -Verbose:$Verbose;
     if ($Ensure -eq 'Present') {
-    
+
         $arguments = @(
             ('/i "{0}"' -f $setupPath),
             ('DBSERVER="{0}"' -f $DatabaseServer),
@@ -169,7 +191,7 @@ function Set-TargetResource {
     $arguments += '/norestart';
     $arguments += '/qn';
     StartWaitProcess -FilePath "$env:WINDIR\System32\msiexec.exe" -ArgumentList $arguments -Verbose:$Verbose;
-    
+
 } #end function Set-TargetResource
 
 

@@ -17,66 +17,80 @@ function Get-TargetResource {
     [OutputType([System.Collections.Hashtable])]
     param (
         ## RES ONE Automation database server name/instance (equivalient to DBSERVER).
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $DatabaseServer,
-        
+
         ## RES ONE Automation database name (equivalient to DBNAME).
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $DatabaseName,
-        
+
         ## Microsoft SQL username/password to connect to the database (equivalent to DBUSER/DBPASSWORD).
-        [Parameter(Mandatory)] [ValidateNotNull()]
-        [System.Management.Automation.PSCredential] $Credential,
-        
+        [Parameter(Mandatory)]
+        [ValidateNotNull()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential,
+
         ## File path containing the RES ONE Automation MSIs or the literal path to the Agent MSI.
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Path,
-        
+
         ## By default, the Agent will autodetect Dispatchers. To use a fixed list of Dispatchers instead, use
         ## this parameter to specify the names or GUIDs of Dispatchers to use. Separate multiple entries with a semi-colon (;).
-        [Parameter()] [ValidateNotNullOrEmpty()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String[]] $DispatcherList,
-        
+
         ## Should the agent try autodetecting Dispatchers before using the $DispatcherList
-        [Parameter()] [ValidateNotNull()]
+        [Parameter()]
+        [ValidateNotNull()]
         [System.Boolean] $UseAutodetectFirst = $true,
-        
+
         ## Should the agent extend its list of Dispatchers by downloading a list of all Dispatchers.
-        [Parameter()] [ValidateNotNull()]
+        [Parameter()]
+        [ValidateNotNull()]
         [System.Boolean] $DownloadDispatcherList = $false,
-        
+
         ## To add the Agent as a member of one or more Teams, use this property to specify the names or GUIDs
         ## of the Teams. Separate multiple entries with a semi-colon (;).
-        [Parameter()] [ValidateNotNullOrEmpty()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String[]] $AddToTeam,
-        
+
         ## To run one or more Modules, Projects or Run Books on the new Agent as soon as it comes online, use this property
         ## to specify the GUIDs.
-        [Parameter()] [ValidateNotNullOrEmpty()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String[]] $InvokeProject,
-        
+
         ## RES ONE Automation component version to be installed, i.e. 8.0.3.0
-        [Parameter()] [ValidateNotNullOrEmpty()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Version,
-        
+
         ## The specified Path is a literal file reference (bypasses the $Versioncheck).
-        [Parameter()] [ValidateNotNull()]
+        [Parameter()]
+        [ValidateNotNull()]
         [System.Management.Automation.SwitchParameter] $IsLiteralPath,
-        
-        [Parameter()] [ValidateSet('Present','Absent')]
+
+        [Parameter()]
+        [ValidateSet('Present','Absent')]
         [System.String] $Ensure = 'Present'
     )
 
     $setupPath = ResolveROAPackagePath -Path $Path -Component 'Agent' -Version $Version -IsLiteralPath:$IsLiteralPath -Verbose:$Verbose;
     [System.String] $msiProductName = GetWindowsInstallerPackageProperty -Path $setupPath -Property ProductName;
     $productName = $msiProductName.Trim();
-    
+
     $targetResource = @{
         Path = $setupPath;
         ProductName = $productName;
-        Ensure = if (GetProductEntry -Name $productName) { 'Present' } else { 'Absent' };       
+        Ensure = if (GetProductEntry -Name $productName) { 'Present' } else { 'Absent' };
     }
-    return $targetResource; 
+    return $targetResource;
 
 } #end function Get-TargetResource
 
@@ -86,53 +100,67 @@ function Test-TargetResource {
     [OutputType([System.Boolean])]
     param (
         ## RES ONE Automation database server name/instance (equivalient to DBSERVER).
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $DatabaseServer,
-        
+
         ## RES ONE Automation database name (equivalient to DBNAME).
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $DatabaseName,
-        
+
         ## Microsoft SQL username/password to connect to the database (equivalent to DBUSER/DBPASSWORD).
-        [Parameter(Mandatory)] [ValidateNotNull()]
-        [System.Management.Automation.PSCredential] $Credential,
-        
+        [Parameter(Mandatory)]
+        [ValidateNotNull()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential,
+
         ## File path containing the RES ONE Automation MSIs or the literal path to the Agent MSI.
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Path,
-        
+
         ## By default, the Agent will autodetect Dispatchers. To use a fixed list of Dispatchers instead, use
         ## this parameter to specify the names or GUIDs of Dispatchers to use. Separate multiple entries with a semi-colon (;).
-        [Parameter()] [ValidateNotNullOrEmpty()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String[]] $DispatcherList,
-        
+
         ## Should the agent try autodetecting Dispatchers before using the $DispatcherList
-        [Parameter()] [ValidateNotNull()]
+        [Parameter()]
+        [ValidateNotNull()]
         [System.Boolean] $UseAutodetectFirst = $true,
-        
+
         ## Should the agent extend its list of Dispatchers by downloading a list of all Dispatchers.
-        [Parameter()] [ValidateNotNull()]
+        [Parameter()]
+        [ValidateNotNull()]
         [System.Boolean] $DownloadDispatcherList = $false,
-        
+
         ## To add the Agent as a member of one or more Teams, use this property to specify the names or GUIDs
         ## of the Teams. Separate multiple entries with a semi-colon (;).
-        [Parameter()] [ValidateNotNullOrEmpty()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String[]] $AddToTeam,
-        
+
         ## To run one or more Modules, Projects or Run Books on the new Agent as soon as it comes online, use this property
         ## to specify the GUIDs.
-        [Parameter()] [ValidateNotNullOrEmpty()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String[]] $InvokeProject,
-        
+
         ## RES ONE Automation component version to be installed, i.e. 8.0.3.0
-        [Parameter()] [ValidateNotNullOrEmpty()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Version,
-        
+
         ## The specified Path is a literal file reference (bypasses the $Versioncheck).
-        [Parameter()] [ValidateNotNull()]
+        [Parameter()]
+        [ValidateNotNull()]
         [System.Management.Automation.SwitchParameter] $IsLiteralPath,
-        
-        [Parameter()] [ValidateSet('Present','Absent')]
+
+        [Parameter()]
+        [ValidateSet('Present','Absent')]
         [System.String] $Ensure = 'Present'
     )
 
@@ -152,58 +180,73 @@ function Test-TargetResource {
 
 function Set-TargetResource {
     [CmdletBinding()]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     param (
         ## RES ONE Automation database server name/instance (equivalient to DBSERVER).
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $DatabaseServer,
-        
+
         ## RES ONE Automation database name (equivalient to DBNAME).
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $DatabaseName,
-        
+
         ## Microsoft SQL username/password to connect to the database (equivalent to DBUSER/DBPASSWORD).
-        [Parameter(Mandatory)] [ValidateNotNull()]
-        [System.Management.Automation.PSCredential] $Credential,
-        
+        [Parameter(Mandatory)]
+        [ValidateNotNull()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential,
+
         ## File path containing the RES ONE Automation MSIs or the literal path to the Agent MSI.
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Path,
-        
+
         ## By default, the Agent will autodetect Dispatchers. To use a fixed list of Dispatchers instead, use
         ## this parameter to specify the names or GUIDs of Dispatchers to use. Separate multiple entries with a semi-colon (;).
-        [Parameter()] [ValidateNotNullOrEmpty()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String[]] $DispatcherList,
-        
+
         ## Should the agent try autodetecting Dispatchers before using the $DispatcherList
-        [Parameter()] [ValidateNotNull()]
+        [Parameter()]
+        [ValidateNotNull()]
         [System.Boolean] $UseAutodetectFirst = $true,
-        
+
         ## Should the agent extend its list of Dispatchers by downloading a list of all Dispatchers.
-        [Parameter()] [ValidateNotNull()]
+        [Parameter()]
+        [ValidateNotNull()]
         [System.Boolean] $DownloadDispatcherList = $false,
-        
+
         ## To add the Agent as a member of one or more Teams, use this property to specify the names or GUIDs
         ## of the Teams. Separate multiple entries with a semi-colon (;).
-        [Parameter()] [ValidateNotNullOrEmpty()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String[]] $AddToTeam,
-        
+
         ## To run one or more Modules, Projects or Run Books on the new Agent as soon as it comes online, use this property
         ## to specify the GUIDs.
-        [Parameter()] [ValidateNotNullOrEmpty()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String[]] $InvokeProject,
-        
+
         ## RES ONE Automation component version to be installed, i.e. 8.0.3.0
-        [Parameter()] [ValidateNotNullOrEmpty()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Version,
-        
+
         ## The specified Path is a literal file reference (bypasses the $Versioncheck).
-        [Parameter()] [ValidateNotNull()]
+        [Parameter()]
+        [ValidateNotNull()]
         [System.Management.Automation.SwitchParameter] $IsLiteralPath,
-        
-        [Parameter()] [ValidateSet('Present','Absent')]
+
+        [Parameter()]
+        [ValidateSet('Present','Absent')]
         [System.String] $Ensure = 'Present'
     )
-    
+
     $setupPath = ResolveROAPackagePath -Path $Path -Component 'Agent' -Version $Version -IsLiteralPath:$IsLiteralPath -Verbose:$Verbose;
     if ($Ensure -eq 'Present') {
 
@@ -242,7 +285,7 @@ function Set-TargetResource {
     $arguments += '/norestart';
     $arguments += '/qn';
     StartWaitProcess -FilePath "$env:WINDIR\System32\msiexec.exe" -ArgumentList $arguments -Verbose:$Verbose;
-    
+
 } #end function Set-TargetResource
 
 

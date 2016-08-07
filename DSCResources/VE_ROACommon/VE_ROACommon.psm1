@@ -33,10 +33,11 @@ function GetWindowsInstallerPackageProperty {
     [CmdletBinding()]
     [OutputType([System.String])]
     param (
-        [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName='Path')]
-        [ValidateNotNullOrEmpty()] [Alias('PSPath','FullName')]
+        [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'Path')]
+        [ValidateNotNullOrEmpty()]
+        [Alias('PSPath','FullName')]
         [System.String] $Path,
-        
+
         [Parameter(Mandatory, Position = 0, ValueFromPipelineByPropertyName, ParameterSetName = 'LiteralPath')]
         [ValidateNotNullOrEmpty()]
         [System.String] $LiteralPath,
@@ -46,18 +47,18 @@ function GetWindowsInstallerPackageProperty {
         [System.String] $Property = 'ProductCode'
     )
     begin {
-        
+
         if ($PSCmdlet.ParameterSetName -eq 'Path') {
             $LiteralPath += $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path);
         }
 
     } #end begin
     process {
-        
+
         $windowsInstaller = New-Object -ComObject WindowsInstaller.Installer;
         Write-Verbose -Message ($localizedData.OpeningMSIDatabase -f $LiteralPath);
         try {
-        
+
             $msiDatabase = $windowsInstaller.GetType().InvokeMember('OpenDatabase', 'InvokeMethod', $null, $windowsInstaller, @("$LiteralPath", 0));
             $query = "SELECT Value FROM Property WHERE Property = '{0}'" -f $Property;
             $view = $msiDatabase.GetType().InvokeMember('OpenView', 'InvokeMethod', $null, $msiDatabase, $query);
@@ -66,7 +67,7 @@ function GetWindowsInstallerPackageProperty {
             $value = $record.GetType().InvokeMember('StringData', 'GetProperty', $null, $record, 1);
             return $value;
 
-        } 
+        }
         catch {
             throw;
         }
@@ -86,11 +87,13 @@ function StartWaitProcess {
     [OutputType([System.Int32])]
     param (
         # Path to process to start.
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $FilePath,
 
         # Arguments (if any) to apply to the process.
-        [Parameter()] [AllowNull()]
+        [Parameter()]
+        [AllowNull()]
         [System.String[]] $ArgumentList,
 
         # Credential to start the process as.
@@ -100,7 +103,8 @@ function StartWaitProcess {
         $Credential,
 
         # Working directory
-        [Parameter()] [ValidateNotNullOrEmpty()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String] $WorkingDirectory = (Split-Path -Path $FilePath -Parent)
     )
     process {
@@ -137,7 +141,7 @@ function StartWaitProcess {
             Write-Verbose ($localizedData.ProcessExited -f $process.Id, $exitCode);
         }
         return $exitCode;
-        
+
     } #end process
 } #end function StartWaitProcess
 
@@ -149,21 +153,27 @@ function GetRAMSiteLicense {
     .NOTES
         This cmdlet currently only support Microsoft SQL servers.
 #>
-    [CmdletBinding(DefaultParameterSetName='SQLAuth')]
+    [CmdletBinding(DefaultParameterSetName = 'SQLAuth')]
     param (
         # Database server to connect to
-        [Parameter(Mandatory=$true)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Server,
-        
+
         # Database to connect to
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Database,
-        
+
         # SQL authentication username
-        [Parameter(Mandatory)] [ValidateNotNull()]
-        [System.Management.Automation.PSCredential] $Credential
+        [Parameter(Mandatory)]
+        [ValidateNotNull()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential
     )
     process {
+
         $sqlConnectionString = 'Data Source={0};Initial Catalog={1};User Id={2};Password={3};' -f $Server, $Database, $Credential.UserName, $Credential.GetNetworkCredential().Password;
         $sqlConnection = New-Object -TypeName System.Data.SqlClient.SqlConnection -Property @{ 'ConnectionString' = $sqlConnectionString; };
         $sqlConnection.Open();
@@ -179,6 +189,7 @@ function GetRAMSiteLicense {
         $dirtySiteLicense = "RES-$(($dataSet.Tables[0].License).Replace('{','').Replace('}',''))";
         $cleanSiteLicense = $dirtySiteLicense.Insert(8, '-').Insert(33, '-').Insert(38, '-');
         return $cleanSiteLicense;
+
     }
 } #end function GetRAMSiteLicense
 
@@ -191,19 +202,19 @@ function GetProductEntry {
     param (
         [Parameter()] [ValidateNotNullOrEmpty()]
         [System.String] $Name,
-        
+
         [Parameter()] [ValidateNotNullOrEmpty()]
         [System.String] $IdentifyingNumber,
-        
+
         [Parameter()] [ValidateNotNullOrEmpty()]
         [System.String] $InstalledCheckRegHive = 'LocalMachine',
-        
+
         [Parameter()] [ValidateNotNullOrEmpty()]
         [System.String] $InstalledCheckRegKey,
-        
+
         [Parameter()] [ValidateNotNullOrEmpty()]
         [System.String] $InstalledCheckRegValueName,
-        
+
         [Parameter()] [ValidateNotNullOrEmpty()]
         [System.String] $InstalledCheckRegValueData
     )
@@ -240,7 +251,7 @@ function GetProductEntry {
             $installValue = GetRegistryValueIgnoreError @getRegistryValueIgnoreErrorParams -RegistryView [Microsoft.Win32.RegistryView]::Registry64;
         }
 
-        if ($installValue -eq $null) {
+        if ($null -eq $installValue) {
             $installValue = GetRegistryValueIgnoreError @getRegistryValueIgnoreErrorParams -RegistryView [Microsoft.Win32.RegistryView]::Registry32;
         }
 
@@ -265,7 +276,7 @@ function GetRegistryValueIgnoreError {
         [Parameter(Mandatory)]
         [Microsoft.Win32.RegistryHive] $RegistryHive,
 
-        [Parameter(Mandatory)] 
+        [Parameter(Mandatory)]
         [System.String] $Key,
 
         [Parameter(Mandatory)]
@@ -278,7 +289,7 @@ function GetRegistryValueIgnoreError {
     try {
         $baseKey = [Microsoft.Win32.RegistryKey]::OpenBaseKey($RegistryHive, $RegistryView);
         $subKey =  $baseKey.OpenSubKey($Key);
-        if($subKey -ne $null) {
+        if($null -ne $subKey) {
             return $subKey.GetValue($Value);
         }
     }
@@ -299,7 +310,7 @@ function GetLocalizableRegKeyValue {
     param (
         [Parameter()]
         [System.Object] $RegKey,
-        
+
         [Parameter()]
         [System.String] $ValueName
     )
@@ -322,15 +333,15 @@ function ResolveROAPackagePath {
         ## The literal file path or root search path
         [Parameter(Mandatory)]  [ValidateNotNullOrEmpty()]
         [System.String] $Path,
-        
+
         ## Required RES ONE Automation/Automation Manager component
         [Parameter(Mandatory)] [ValidateSet('Console','Dispatcher','Agent','Installer')]
         [System.String] $Component,
-        
+
         ## RES ONE Automation component version to be installed, i.e. 7.0.4 or 7.5.3.1
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
         [System.String] $Version,
-        
+
         ## The specified Path is a literal file reference (bypasses the Version check).
         [Parameter()]
         [System.Boolean] $IsLiteralPath
@@ -352,17 +363,17 @@ function ResolveROAPackagePath {
         $packagePath = $Path;
     }
     else {
-        
+
         [System.Version] $productVersion = $Version;
-        
+
         switch ($productVersion.Major) {
-        
+
             7 {
-        
+
                 switch ($productVersion.Minor) {
 
                     ## ProductName is only used by the 'Installer' component, PackageName is used by all other components
-                    
+
                     0 {
                         $packageName = 'RES-AM';
                         $productName = 'RES-AM-2014';
@@ -376,13 +387,13 @@ function ResolveROAPackagePath {
                     }
 
                 } #end switch version minor
-            
+
             }
-        
+
             Default {
                 throw ($localizedData.UnsupportedVersionError -f $productVersion.ToString());
             }
-        
+
         } #end switch version major
 
         ## Calculate the version search Regex. RES AM uses version numbers in the Console, Agent and Dispatcher MSIs
@@ -403,7 +414,7 @@ function ResolveROAPackagePath {
         switch ($Component) {
 
             'Installer' {
-                
+
                 ## We need the RES-ONE-Automation-2015-SR3.msi or RES-AM-2014-SR4.msi
                 if ($productVersion.Build -eq 0) {
                     ## We're after the RTM release, e.g. specified 9.9.0 or 9.10.0
@@ -419,16 +430,16 @@ function ResolveROAPackagePath {
                 }
 
             }
-            
+
             'Agent' {
-                
+
                 ## RES-ONE-Automation-2015-Agent-7.5.3.1 or RES-AM-Agent-7.0.4.3
                 $regex = '{0}-Agent-{1}.msi' -f $packageName, $versionRegex;
 
             } #end switch Agent
 
             'Dispatcher' {
-        
+
                 $architecture = 'x86';
                 if ([System.Environment]::Is64BitOperatingSystem) {
                     $architecture = 'x64';
@@ -439,24 +450,24 @@ function ResolveROAPackagePath {
             } #end switch Dispatcher
 
             Default {
-        
+
                 ## RES-ONE-Automation-2015-Console-7.5.3.1 or RES-AM-Console-7.0.4.3
                 $regex = '{0}-Console-{1}.msi' -f $packageName, $versionRegex;
 
             } #end switch Console/Database
-    
+
         } #end switch component
 
         Write-Verbose -Message ($localizedData.SearchFilePatternMatch -f $regex);
 
-        $packagePath = Get-ChildItem -Path $Path -Recurse | 
+        $packagePath = Get-ChildItem -Path $Path -Recurse |
             Where-Object { $_.Name -imatch $regex } |
                 Sort-Object -Property Name -Descending |
                     Select-Object -ExpandProperty FullName -First 1;
-    
+
         if ((-not $IsLiteralPath) -and (-not [System.String]::IsNullOrEmpty($packagePath))) {
             Write-Verbose ($localizedData.LocatedPackagePath -f $packagePath);
-            return $packagePath;    
+            return $packagePath;
         }
         elseif ([System.String]::IsNullOrEmpty($packagePath)) {
             throw  ($localizedData.UnableToLocatePackageError -f $Component);
