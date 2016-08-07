@@ -23,13 +23,13 @@ configuration ROALab {
         [Parameter(Mandatory)]
         [ValidateNotNull()]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $Credential,
+        [System.Management.Automation.Credential()] $Credential,
 
         ## Microsoft SQL database credentials used to create the database (equivalient to DBCREATEUSER/DBCREATEPASSWORD).
         [Parameter(Mandatory)]
         [ValidateNotNull()]
-        [System.Management.Automation.PSCredential] $SQLCredential,
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()] $SQLCredential,
 
         ## File path containing the RES ONE Automation MSIs or the literal path to the legacy console/Sync Tool MSI.
         [Parameter(Mandatory)]

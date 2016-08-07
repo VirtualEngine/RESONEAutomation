@@ -99,8 +99,7 @@ function StartWaitProcess {
         # Credential to start the process as.
         [Parameter()] [AllowNull()]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.CredentialAttribute()]
-        $Credential,
+        [System.Management.Automation.CredentialAttribute()] $Credential,
 
         # Working directory
         [Parameter()]
@@ -169,8 +168,7 @@ function GetRAMSiteLicense {
         [Parameter(Mandatory)]
         [ValidateNotNull()]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $Credential
+        [System.Management.Automation.Credential()] $Credential
     )
     process {
 

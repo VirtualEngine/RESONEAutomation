@@ -30,8 +30,7 @@ function Get-TargetResource {
         [Parameter(Mandatory)]
         [ValidateNotNull()]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $Credential,
+        [System.Management.Automation.Credential()] $Credential,
 
         ## File path containing the RES ONE Automation MSIs or the literal path to the Agent MSI.
         [Parameter(Mandatory)]
@@ -113,8 +112,7 @@ function Test-TargetResource {
         [Parameter(Mandatory)]
         [ValidateNotNull()]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $Credential,
+        [System.Management.Automation.Credential()] $Credential,
 
         ## File path containing the RES ONE Automation MSIs or the literal path to the Agent MSI.
         [Parameter(Mandatory)]
@@ -196,8 +194,7 @@ function Set-TargetResource {
         [Parameter(Mandatory)]
         [ValidateNotNull()]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $Credential,
+        [System.Management.Automation.Credential()] $Credential,
 
         ## File path containing the RES ONE Automation MSIs or the literal path to the Agent MSI.
         [Parameter(Mandatory)]

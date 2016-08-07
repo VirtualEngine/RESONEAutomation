@@ -26,8 +26,7 @@ function Get-TargetResource {
         ## Microsoft SQL username/password to create (equivalent to DBUSER/DBPASSWORD).
         [Parameter(Mandatory)]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $Credential,
+        [System.Management.Automation.Credential()] $Credential,
 
         ## File path containing the RES ONE Automation MSIs or the literal path to the installation MSI.
         [Parameter(Mandatory)]
@@ -74,8 +73,7 @@ function Test-TargetResource {
         ## Microsoft SQL username/password to create (equivalent to DBUSER/DBPASSWORD).
         [Parameter(Mandatory)]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $Credential,
+        [System.Management.Automation.Credential()] $Credential,
 
         ## File path containing the RES ONE Automation MSIs or the literal path to the installation MSI.
         [Parameter(Mandatory)]
@@ -124,8 +122,7 @@ function Set-TargetResource {
         ## Microsoft SQL username/password to create (equivalent to DBUSER/DBPASSWORD).
         [Parameter(Mandatory)]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $Credential,
+        [System.Management.Automation.Credential()] $Credential,
 
         ## File path containing the RES ONE Automation MSIs or the literal path to the installation MSI.
         [Parameter(Mandatory)]

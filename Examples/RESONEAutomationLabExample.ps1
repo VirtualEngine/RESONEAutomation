@@ -16,13 +16,13 @@ configuration RESONEAutomationLabExample {
     param (
         ## RES ONE Automation SQL database/user credential
         [Parameter(Mandatory)]
-        [PSCredential]
+        [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
         ## Microsoft SQL Server credentials used to create the RES ONE Automation database/user
         [Parameter(Mandatory)]
-        [PSCredential]
+        [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $SQLCredential
     )

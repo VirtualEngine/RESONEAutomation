@@ -28,8 +28,7 @@ function Get-TargetResource {
         ## Microsoft SQL username/password to connect to the database (equivalent to DBUSER/DBPASSWORD).
         [Parameter(Mandatory)]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $Credential,
+        [System.Management.Automation.Credential()] $Credential,
 
         ## File path containing the RES ONE Automation MSIs or the literal path to the Dispatcher MSI.
         [Parameter(Mandatory)]
@@ -91,8 +90,7 @@ function Test-TargetResource {
         ## Microsoft SQL username/password to connect to the database (equivalent to DBUSER/DBPASSWORD).
         [Parameter(Mandatory)]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $Credential,
+        [System.Management.Automation.Credential()] $Credential,
 
         ## File path containing the RES ONE Automation MSIs or the literal path to the Dispatcher MSI.
         [Parameter(Mandatory)]
@@ -144,8 +142,7 @@ function Set-TargetResource {
         ## Microsoft SQL username/password to connect to the database (equivalent to DBUSER/DBPASSWORD).
         [Parameter(Mandatory)]
         [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $Credential,
+        [System.Management.Automation.Credential()] $Credential,
 
         ## File path containing the RES ONE Automation MSIs or the literal path to the Dispatcher MSI.
         [Parameter(Mandatory)]
