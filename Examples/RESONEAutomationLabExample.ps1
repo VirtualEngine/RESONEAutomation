@@ -4,10 +4,10 @@
             NodeName = 'localhost';
             PSDSCAllowPlainTextPassword = $true;
 
-            ROADatabaseServer  = 'controller.lab.local';
-            ROADatabaseName    = 'RESONEAutomation';
-            ROABinariesPath    = 'C:\SharedData\Software\RES\ONE Automation 2015\SR1';
-            ROABinariesVersion = '7.5.1.0';
+            ROADatabaseServer = 'controller.lab.local';
+            ROADatabaseName   = 'RESONEAutomation';
+            ROABinaryPath     = 'C:\SharedData\Software\RES\ONE Automation 2015\SR1';
+            ROABinaryVersion  = '7.5.1.0';
         }
     )
 }
@@ -32,18 +32,20 @@ configuration RESONEAutomationLabExample {
     node 'localhost' {
 
         ROALab 'ROALab' {
+
             DatabaseServer = $node.ROADatabaseServer;
-            DatabaseName = $Node.ROADatabaseName;
-            Path = $node.ROABinariesPath;
-            Version = $node.ROABinariesVersion;
-            SQLCredential = $SQLCredential;
-            Credential = $Credential;
+            DatabaseName   = $Node.ROADatabaseName;
+            Path           = $node.ROABinaryPath;
+            Version        = $node.ROABinaryVersion;
+            SQLCredential  = $SQLCredential;
+            Credential     = $Credential;
+            Ensure         = 'Present';
         }
 
     }
 
 } #end configuration RESONEAutomationLabExample
 
-if (-not $Cred) { $Cred = Get-Credential -UserName 'RESONEAutomation' -Message 'RES ONE Automation SQL account credential'; }
-if (-not $sqlCred) { $sqlCred = New-Object PSCredential -ArgumentList 'sa', (ConvertTo-SecureString -String 'Tra1ning' -AsPlainText -Force); }
+if (-not $cred) { $cred = Get-Credential -UserName 'RESONEAutomation' -Message 'RES ONE Automation SQL account credential'; }
+if (-not $sqlCred) { $sqlCred = Get-Credential -UserName 'sa' -Message 'Existing SQL account for database creation'; }
 RESONEAutomationLabExample -OutputPath ~\Documents -ConfigurationData $config -Credential $cred -SQLCredential $sqlCred;

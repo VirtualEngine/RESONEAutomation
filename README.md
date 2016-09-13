@@ -2,13 +2,12 @@ RES ONE Automation DSC Resources
 ================================
 ## Included Resources
 * **ROAAgent**: Deploys a RES ONE Automation agent
+* **ROABuildingBlock**: Imports a RES ONE Automation building block
 * **ROAConsole**: Installs the RES ONE Automation console
 * **ROADatabase**: Installs the RES ONE Automation console and creates a RES ONE Automation database
 * **ROADatabaseAgent**: Installs a RES ONE Automation Agent, querying the database for the Site Id
 * **ROADispatcher**: Deploys a RES ONE Automation Dispatcher
 * **ROALab (Composite)**: Deploys a single-node RES ONE Automation server lab environment
-* **ROALabBuildingBlock (Compsite)**: Adds a RES ONE Automation building block
- * **NOTE: Requires Windows Management Framework 5 with Windows Authentication.**
 
 ## Required Resources
 * **xNetworking**: ROALab requires https://github.com/PowerShell/xNetworking to create server firewall rules
@@ -30,6 +29,19 @@ ROAAgent [String] #ResourceName
     [ InvokeProject = [String[]] ]
     [ UseAutodetectFirst = [Bool] ]
     [ Ensure = [String] { Absent | Present } ]
+}
+```
+
+ROABuildingBlock
+===================
+Imports a RES ONE Automation building block.
+### Syntax
+```
+ROABuildingBlock [String] #ResourceName
+{
+    Path = [String]
+    [ Credential = [PSCredential] ]
+    [ IsRESONEAutomationCredential = [Boolean] ]
 }
 ```
 
@@ -111,7 +123,7 @@ ROADispatcher [String] #ResourceName
 
 ROALab
 ======
-Deploys a single-node RES ONE Automation lab server environment. 
+Deploys a single-node RES ONE Automation lab server environment.
 ### Syntax
 ```
 ROALab [String] #ResourceName
@@ -124,20 +136,4 @@ ROALab [String] #ResourceName
     Version = [String]
     [ Ensure = [String] { Absent | Present } ]
 }
-```
-
-ROALabBuildingBlock
-===================
-Adds a RES ONE Automation building block.
-### Syntax
-```
-ROALabBuildingBlock [String] #ResourceName
-{
-    Path = [String]
-    [ Credential = [PSCredential] ]
-    [ UseAutomationAuthentication = [Boolean] ]
-    [ Architecture = [String] { x64 | x86 } ]
-    [ Ensure = [String] { Present } ]
-}
-
 ```
