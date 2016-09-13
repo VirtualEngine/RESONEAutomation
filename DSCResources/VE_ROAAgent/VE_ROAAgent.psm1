@@ -1,7 +1,5 @@
-# Localized messages
-data LocalizedData
-{
-    # culture="en-US"
+data localizedData {
+    # Localized messages; culture="en-US"
     ConvertFrom-StringData @'
         OpeningMSIDatabase              = Opening MSI database '{0}'.
         ResourceIncorrectPropertyState  = Resource property '{0}' is NOT in the desired state. Expected '{1}', actual '{2}'.
@@ -58,15 +56,15 @@ function Get-TargetResource {
         [System.String] $Ensure = 'Present'
     )
 
-    $setupPath = ResolveROAPackagePath -Path $Path -Component 'Agent' -Version $Version -IsLiteralPath:$IsLiteralPath -Verbose:$Verbose;
-    [System.String] $msiProductName = GetWindowsInstallerPackageProperty -Path $setupPath -Property ProductName;
+    $setupPath = Resolve-ROAPackagePath -Path $Path -Component 'Agent' -Version $Version -IsLiteralPath:$IsLiteralPath -Verbose:$Verbose;
+    [System.String] $msiProductName = Get-WindowsInstallerPackageProperty -Path $setupPath -Property ProductName;
     $productName = $msiProductName.Trim();
 
     $targetResource = @{
         Path = $setupPath;
         ProductName = $productName;
         Version = $productEntry.DisplayVersion;
-        Ensure = if (GetProductEntry -Name $productName) { 'Present' } else { 'Absent' };
+        Ensure = if (Get-InstalledProductEntry -Name $productName) { 'Present' } else { 'Absent' };
     }
     return $targetResource;
 
@@ -181,7 +179,7 @@ function Set-TargetResource {
         [System.String] $Ensure = 'Present'
     )
 
-    $setupPath = ResolveROAPackagePath -Path $Path -Component 'Agent' -Version $Version -IsLiteralPath:$IsLiteralPath -Verbose:$Verbose;
+    $setupPath = Resolve-ROAPackagePath -Path $Path -Component 'Agent' -Version $Version -IsLiteralPath:$IsLiteralPath -Verbose:$Verbose;
     if ($Ensure -eq 'Present') {
 
         $arguments = @(
@@ -203,7 +201,7 @@ function Set-TargetResource {
     }
     elseif ($Ensure -eq 'Absent') {
 
-        [System.String] $msiProductCode = GetWindowsInstallerPackageProperty -Path $setupPath -Property ProductCode;
+        [System.String] $msiProductCode = Get-WindowsInstallerPackageProperty -Path $setupPath -Property ProductCode;
         $arguments = @(
             ('/X{0}' -f $msiProductCode)
         )
@@ -213,7 +211,7 @@ function Set-TargetResource {
     ## Start install/uninstall
     $arguments += '/norestart';
     $arguments += '/qn';
-    StartWaitProcess -FilePath "$env:WINDIR\System32\msiexec.exe" -ArgumentList $arguments -Verbose;
+    Start-WaitProcess -FilePath "$env:WINDIR\System32\msiexec.exe" -ArgumentList $arguments -Verbose;
 
 } #end function Set-TargetResource
 
@@ -221,6 +219,6 @@ function Set-TargetResource {
 ## Import the ROACommon library functions
 $moduleRoot = Split-Path -Path $MyInvocation.MyCommand.Path -Parent;
 $moduleParent = Split-Path -Path $moduleRoot -Parent;
-Import-Module (Join-Path -Path $moduleParent -ChildPath 'VE_ROACommon');
+Import-Module (Join-Path -Path $moduleParent -ChildPath 'ROACommon');
 
 Export-ModuleMember -Function *-TargetResource;

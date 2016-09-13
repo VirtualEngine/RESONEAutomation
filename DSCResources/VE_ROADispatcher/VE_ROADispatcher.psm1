@@ -1,7 +1,5 @@
-# Localized messages
-data LocalizedData
-{
-    # culture="en-US"
+data localizedData {
+    # Localized messages; culture="en-US"
     ConvertFrom-StringData @'
         ResourceIncorrectPropertyState  = Resource property '{0}' is NOT in the desired state. Expected '{1}', actual '{2}'.
         ResourceInDesiredState          = Resource '{0}' is in the desired state.
@@ -49,12 +47,12 @@ function Get-TargetResource {
         [System.String] $Ensure = 'Present'
     )
 
-    $setupPath = ResolveROAPackagePath -Path $Path -Component 'Dispatcher' -Version $Version -IsLiteralPath:$IsLiteralPath -Verbose:$Verbose;
-    [System.String] $msiProductName = GetWindowsInstallerPackageProperty -Path $setupPath -Property ProductName;
+    $setupPath = Resolve-ROAPackagePath -Path $Path -Component 'Dispatcher' -Version $Version -IsLiteralPath:$IsLiteralPath -Verbose:$Verbose;
+    [System.String] $msiProductName = Get-WindowsInstallerPackageProperty -Path $setupPath -Property ProductName;
 
     ## Product name appeared to changed in SR3, i.e. 'RES ONE Automation 2015 SR3 Dispatcher+(x64) '
     ## NOTE: THERE IS A SPACE ON THE END OF THE PRODUCT NAME?! Assumption at the moment is this is a one-of..
-    [System.String] $msiProductVersion = GetWindowsInstallerPackageProperty -Path $setupPath -Property ProductVersion;
+    [System.String] $msiProductVersion = Get-WindowsInstallerPackageProperty -Path $setupPath -Property ProductVersion;
     $productVersion = $msiProductVersion -as [System.Version];
     if (($productVersion.Major -eq 7) -and ($productVersion.Minor -eq 5) -and ($productVersion.Build -eq 3)) {
         $productName = $msiProductName.TrimStart();
@@ -66,7 +64,7 @@ function Get-TargetResource {
     $targetResource = @{
         Path = $setupPath;
         ProductName = $productName;
-        Ensure = if (GetProductEntry -Name $productName) { 'Present' } else { 'Absent' };
+        Ensure = if (Get-InstalledProductEntry -Name $productName) { 'Present' } else { 'Absent' };
     }
     return $targetResource;
 
@@ -163,7 +161,7 @@ function Set-TargetResource {
         [System.String] $Ensure = 'Present'
     )
 
-    $setupPath = ResolveROAPackagePath -Path $Path -Component 'Dispatcher' -Version $Version -IsLiteralPath:$IsLiteralPath -Verbose:$Verbose;
+    $setupPath = Resolve-ROAPackagePath -Path $Path -Component 'Dispatcher' -Version $Version -IsLiteralPath:$IsLiteralPath -Verbose:$Verbose;
     if ($Ensure -eq 'Present') {
 
         $arguments = @(
@@ -177,7 +175,7 @@ function Set-TargetResource {
     }
     elseif ($Ensure -eq 'Absent') {
 
-        [System.String] $msiProductCode = GetWindowsInstallerPackageProperty -Path $setupPath -Property ProductCode;
+        [System.String] $msiProductCode = Get-WindowsInstallerPackageProperty -Path $setupPath -Property ProductCode;
         $arguments = @(
             ('/X{0}' -f $msiProductCode)
         )
@@ -187,7 +185,7 @@ function Set-TargetResource {
     ## Start install/uninstall
     $arguments += '/norestart';
     $arguments += '/qn';
-    StartWaitProcess -FilePath "$env:WINDIR\System32\msiexec.exe" -ArgumentList $arguments -Verbose:$Verbose;
+    Start-WaitProcess -FilePath "$env:WINDIR\System32\msiexec.exe" -ArgumentList $arguments -Verbose:$Verbose;
 
 } #end function Set-TargetResource
 
@@ -195,6 +193,6 @@ function Set-TargetResource {
 ## Import the ROACommon library functions
 $moduleRoot = Split-Path -Path $MyInvocation.MyCommand.Path -Parent;
 $moduleParent = Split-Path -Path $moduleRoot -Parent;
-Import-Module (Join-Path -Path $moduleParent -ChildPath 'VE_ROACommon') -Force;
+Import-Module (Join-Path -Path $moduleParent -ChildPath 'ROACommon') -Force;
 
 Export-ModuleMember -Function *-TargetResource;
