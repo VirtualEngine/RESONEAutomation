@@ -6,6 +6,7 @@ class VE_ROADatabase : OMI_BaseResource
     [Required, Description("Path to RES ONE Automation Agent")] String Path;
     [Required, Description("Microsoft SQL username/password to create"), EmbeddedInstance("MSFT_Credential")] String Credential;
     [Required, Description("Microsoft SQL database credentials used to create the database"), EmbeddedInstance("MSFT_Credential")] String SQLCredential;
+    [Write, Description("Path to RES ONE Automation license file")] String LicensePath;
     [Write, Description("Install the specified RES ONE Automation agent version")] String Version;
     [Write, Description("Specified path is a literal file reference")] Boolean IsLiteralPath;
     [Write, ValueMap{"Present", "Absent"},Values{"Present", "Absent"}] String Ensure;

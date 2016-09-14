@@ -37,6 +37,10 @@ function Get-TargetResource {
         [ValidateNotNullOrEmpty()]
         [System.String] $Path,
 
+        ## File path to a RES ONE Service Store license file to import.
+        [Parameter()] [ValidateNotNullOrEmpty()]
+        [System.String] $LicensePath,
+
         ## RES ONE Automation component version to be installed, i.e. 8.0.3.0
         [Parameter()]
         [ValidateNotNullOrEmpty()]
@@ -92,6 +96,10 @@ function Test-TargetResource {
         [Parameter(Mandatory)]
         [ValidateNotNullOrEmpty()]
         [System.String] $Path,
+
+        ## File path to a RES ONE Service Store license file to import.
+        [Parameter()] [ValidateNotNullOrEmpty()]
+        [System.String] $LicensePath,
 
         ## RES ONE Automation component version to be installed, i.e. 8.0.3.0
         [Parameter()]
@@ -152,6 +160,10 @@ function Set-TargetResource {
         [ValidateNotNullOrEmpty()]
         [System.String] $Path,
 
+        ## File path to a RES ONE Service Store license file to import.
+        [Parameter()] [ValidateNotNullOrEmpty()]
+        [System.String] $LicensePath,
+
         ## RES ONE Automation component version to be installed, i.e. 8.0.3.0
         [Parameter()]
         [ValidateNotNullOrEmpty()]
@@ -180,6 +192,10 @@ function Set-TargetResource {
             ('DBCREATEUSER="{0}"' -f $SQLCredential.Username),
             ('DBCREATEPASSWORD="{0}"' -f $SQLCredential.GetNetworkCredential().Password)
         )
+
+        if ($PSBoundParameters.ContainsKey('LicensePath')) {
+            $arguments += 'DBIMPORTLICENSE="{0}"' -f $LicensePath;
+        }
 
     }
     elseif ($Ensure -eq 'Absent') {
