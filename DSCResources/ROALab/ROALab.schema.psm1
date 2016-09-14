@@ -72,7 +72,7 @@ configuration ROALab {
     Import-DscResource -ModuleName xPSDesiredStateConfiguration, xNetworking;
 
     ## Can't import RESONEServiceStore composite resource due to circular references!
-    Import-DscResource -Name ROADatabase, ROADispatcher, ROADatabaseAgent;
+    Import-DscResource -Name ROADatabase, ROADispatcher, ROADatabaseAgent, ROABuildingBlock;
 
     ## If path -match '\.msi$', throw.
     if ($Path -match '\.msi$') {
