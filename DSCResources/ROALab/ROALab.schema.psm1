@@ -41,6 +41,22 @@ configuration ROALab {
         [ValidateNotNullOrEmpty()]
         [System.String] $Version,
 
+        ## File path to RES ONE Automation building blocks to import.
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.String] $BuildingBlockPath,
+
+        ## Credential used to import the RES ONE Automation building blocks.
+        [Parameter()]
+        [ValidateNotNull()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()] $BuildingBlockCredential,
+
+        ## Credential used to import the building blocks is a RES ONE Automation user.
+        [Parameter()]
+        [ValidateNotNull()]
+        [System.Boolean] $IsBuildingBlockCredentialRESONEAutomationUser,
+
         [Parameter()]
         [ValidateSet('Present','Absent')]
         [System.String] $Ensure = 'Present'
@@ -89,6 +105,16 @@ configuration ROALab {
             Ensure = $Ensure;
             IsLiteralPath = $false;
             DependsOn = '[ROADispatcher]ROALabDispatcher';
+        }
+
+        if ($PSBoundParameters.ContainsKey('BuildingBlockPath')) {
+
+            ROABuildingBlock 'ROALabBuildingBlock' {
+                Path = $BuildingBlockPath;
+                Credential = $BuildingBlockCredential;
+                IsRESONEAutomationCredential = $IsBuildingBlockCredentialRESONEAutomationUser;
+                DependsOn =  '[ROADatabase]ROALabDatabase';
+            }
         }
 
     }
