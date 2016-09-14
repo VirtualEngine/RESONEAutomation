@@ -74,6 +74,7 @@ ROADatabase [String] #ResourceName
     Credential = [PSCredential]
     SQLCredential = [PSCredential]
     Path = [String]
+    [ LicensePath = [String] ]
     [ Version = [String] ]
     [ IsLiteralPath = [Boolean] ]
     [ Ensure = [String] { Absent | Present } ]
@@ -134,6 +135,9 @@ ROALab [String] #ResourceName
     SQLCredential = [PSCredential]
     Path = [String]
     Version = [String]
+    [ BuildingBlockPath = [String] ]
+    [ BuildingBlockCredential = [PSCredential] ]
+    [ IsBuildingBlockCredentialRESONEAutomationUser = [Boolean] ]
     [ Ensure = [String] { Absent | Present } ]
 }
 ```
