@@ -95,7 +95,7 @@ function Get-TargetResource {
         [System.String] $Path,
 
         ## RES ONE Automation authentication credential.
-        [Parameter()]
+        [Parameter(Mandatory)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()] $Credential,
 
@@ -122,7 +122,7 @@ function Test-TargetResource {
         [System.String] $Path,
 
         ## RES ONE Automation authentication credential.
-        [Parameter()]
+        [Parameter(Mandatory)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()] $Credential,
 
@@ -173,7 +173,7 @@ function Set-TargetResource {
         [System.String] $Path,
 
         ## RES ONE Automation authentication credential.
-        [Parameter()]
+        [Parameter(Mandatory)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()] $Credential,
 
