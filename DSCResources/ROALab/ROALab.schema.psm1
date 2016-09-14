@@ -67,7 +67,7 @@ configuration ROALab {
         [System.String] $Ensure = 'Present'
     )
 
-    Write-Verbose 'Starting "ROALab".';
+    Write-Host ' Starting "ROALab".' -ForegroundColor Gray;
 
     Import-DscResource -ModuleName xPSDesiredStateConfiguration, xNetworking;
 
@@ -83,7 +83,7 @@ configuration ROALab {
 
         if ($PSBoundParameters.ContainsKey('LicensePath')) {
 
-            Write-Verbose 'Processing "ROALab\ROALabDatabase" with "LicensePath".';
+            Write-Host ' Processing "ROALab\ROALabDatabase" with "LicensePath".' -ForegroundColor Gray;
             ROADatabase 'ROALabDatabase' {
                 DatabaseServer = $DatabaseServer;
                 DatabaseName = $DatabaseName;
@@ -98,7 +98,7 @@ configuration ROALab {
         }
         else {
 
-            Write-Verbose 'Processing "ROALab\ROALabDatabase".';
+            Write-Host ' Processing "ROALab\ROALabDatabase".' -ForegroundColor Gray;
             ROADatabase 'ROALabDatabase' {
                 DatabaseServer = $DatabaseServer;
                 DatabaseName = $DatabaseName;
@@ -111,7 +111,7 @@ configuration ROALab {
             }
         }
 
-        Write-Verbose 'Processing "ROALab\ROALabDispatcher".';
+        Write-Host ' Processing "ROALab\ROALabDispatcher".' -ForegroundColor Gray;
         ROADispatcher 'ROALabDispatcher' {
             DatabaseServer = $DatabaseServer;
             DatabaseName = $DatabaseName;
@@ -123,7 +123,7 @@ configuration ROALab {
             DependsOn = '[ROADatabase]ROALabDatabase';
         }
 
-        Write-Verbose 'Processing "ROALab\ROALabDatabaseAgent".';
+        Write-Host ' Processing "ROALab\ROALabDatabaseAgent".' -ForegroundColor Gray;
         ROADatabaseAgent 'ROALabDatabaseAgent' {
             DatabaseServer = $DatabaseServer;
             DatabaseName = $DatabaseName;
@@ -137,7 +137,7 @@ configuration ROALab {
 
         if ($PSBoundParameters.ContainsKey('BuildingBlockPath')) {
 
-            Write-Verbose 'Processing "ROALab\ROALabBuildingBlock".';
+            Write-Host ' Processing "ROALab\ROALabBuildingBlock".' -ForegroundColor Gray;
             ROABuildingBlock 'ROALabBuildingBlock' {
                 Path = $BuildingBlockPath;
                 Credential = $BuildingBlockCredential;
@@ -149,7 +149,7 @@ configuration ROALab {
     }
     elseif ($Ensure -eq 'Absent') {
 
-        Write-Verbose 'Processing "ROALab\ROALabDatabaseAgent".';
+        Write-Host ' Processing "ROALab\ROALabDatabaseAgent".' -ForegroundColor Gray;
         ROADatabaseAgent 'ROALabDatabaseAgent' {
             DatabaseServer = $DatabaseServer;
             DatabaseName = $DatabaseName;
@@ -160,7 +160,7 @@ configuration ROALab {
             Ensure = $Ensure;
         }
 
-         Write-Verbose 'Processing "ROALab\ROALabDispatcher".';
+         Write-Host ' Processing "ROALab\ROALabDispatcher".' -ForegroundColor Gray;
          ROADispatcher 'ROALabDispatcher' {
             DatabaseServer = $DatabaseServer;
             DatabaseName = $DatabaseName;
@@ -172,7 +172,7 @@ configuration ROALab {
             DependsOn = '[ROADatabaseAgent]ROALabDatabaseAgent';
         }
 
-        Write-Verbose 'Processing "ROALab\ROALabDatabase".';
+        Write-Host ' Processing "ROALab\ROALabDatabase".' -ForegroundColor Gray;
         ROADatabase 'ROALabDatabase' {
             DatabaseServer = $DatabaseServer;
             DatabaseName = $DatabaseName;
@@ -187,7 +187,7 @@ configuration ROALab {
 
     }
 
-    Write-Verbose 'Processing "ROALab\RESONEAutomationFirewall".';
+    Write-Host ' Processing "ROALab\RESONEAutomationFirewall".' -ForegroundColor Gray;
     xFirewall 'RESONEAutomationFirewall' {
         Name = 'RESONEAutomation-TCP-3163-In';
         Group = 'RES ONE Automation';
@@ -203,7 +203,7 @@ configuration ROALab {
         DependsOn = '[ROADispatcher]ROALabDispatcher';
     }
 
-    Write-Verbose 'Processing "ROALab\RESONEAutomationDiscoveryFirewall".';
+    Write-Host ' Processing "ROALab\RESONEAutomationDiscoveryFirewall".' -ForegroundColor Gray;
     xFirewall 'RESONEAutomationDiscoveryFirewall' {
         Name = 'RESONEAutomation-UDP-3163-In';
         Group = 'RES ONE Automation';
@@ -219,6 +219,6 @@ configuration ROALab {
         DependsOn = '[ROADispatcher]ROALabDispatcher';
     }
 
-    Write-Verbose 'Ending "ROALab".';
+    Write-Host ' Ending "ROALab".' -ForegroundColor Gray;
 
 } #end configuration ROALab
