@@ -41,6 +41,11 @@ configuration ROALab {
         [ValidateNotNullOrEmpty()]
         [System.String] $Version,
 
+        ## File path to RES ONE Automation license file.
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.String] $LicensePath,
+
         ## File path to RES ONE Automation building blocks to import.
         [Parameter()]
         [ValidateNotNullOrEmpty()]
@@ -74,15 +79,32 @@ configuration ROALab {
 
     if ($Ensure -eq 'Present') {
 
-        ROADatabase 'ROALabDatabase' {
-            DatabaseServer = $DatabaseServer;
-            DatabaseName = $DatabaseName;
-            Path = $Path;
-            Version = $Version;
-            SQLCredential = $SQLCredential;
-            Credential = $Credential;
-            IsLiteralPath = $false;
-            Ensure = $Ensure;
+        if ($PSBoundParameters.ContainsKey('LicensePath')) {
+
+            ROADatabase 'ROALabDatabase' {
+                DatabaseServer = $DatabaseServer;
+                DatabaseName = $DatabaseName;
+                Path = $Path;
+                Version = $Version;
+                SQLCredential = $SQLCredential;
+                Credential = $Credential;
+                IsLiteralPath = $false;
+                LicensePath = $LicensePath;
+                Ensure = $Ensure;
+            }
+        }
+        else {
+
+            ROADatabase 'ROALabDatabase' {
+                DatabaseServer = $DatabaseServer;
+                DatabaseName = $DatabaseName;
+                Path = $Path;
+                Version = $Version;
+                SQLCredential = $SQLCredential;
+                Credential = $Credential;
+                IsLiteralPath = $false;
+                Ensure = $Ensure;
+            }
         }
 
         ROADispatcher 'ROALabDispatcher' {
