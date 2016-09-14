@@ -67,6 +67,8 @@ configuration ROALab {
         [System.String] $Ensure = 'Present'
     )
 
+    Write-Verbose 'Starting "ROALab".';
+
     Import-DscResource -ModuleName xPSDesiredStateConfiguration, xNetworking;
 
     ## Can't import RESONEServiceStore composite resource due to circular references!
@@ -81,6 +83,7 @@ configuration ROALab {
 
         if ($PSBoundParameters.ContainsKey('LicensePath')) {
 
+            Write-Verbose 'Processing "ROALab\ROALabDatabase" with "LicensePath".';
             ROADatabase 'ROALabDatabase' {
                 DatabaseServer = $DatabaseServer;
                 DatabaseName = $DatabaseName;
@@ -95,6 +98,7 @@ configuration ROALab {
         }
         else {
 
+            Write-Verbose 'Processing "ROALab\ROALabDatabase".';
             ROADatabase 'ROALabDatabase' {
                 DatabaseServer = $DatabaseServer;
                 DatabaseName = $DatabaseName;
@@ -107,6 +111,7 @@ configuration ROALab {
             }
         }
 
+        Write-Verbose 'Processing "ROALab\ROALabDispatcher".';
         ROADispatcher 'ROALabDispatcher' {
             DatabaseServer = $DatabaseServer;
             DatabaseName = $DatabaseName;
@@ -118,6 +123,7 @@ configuration ROALab {
             DependsOn = '[ROADatabase]ROALabDatabase';
         }
 
+        Write-Verbose 'Processing "ROALab\ROALabDatabaseAgent".';
         ROADatabaseAgent 'ROALabDatabaseAgent' {
             DatabaseServer = $DatabaseServer;
             DatabaseName = $DatabaseName;
@@ -131,6 +137,7 @@ configuration ROALab {
 
         if ($PSBoundParameters.ContainsKey('BuildingBlockPath')) {
 
+            Write-Verbose 'Processing "ROALab\ROALabBuildingBlock".';
             ROABuildingBlock 'ROALabBuildingBlock' {
                 Path = $BuildingBlockPath;
                 Credential = $BuildingBlockCredential;
@@ -142,6 +149,7 @@ configuration ROALab {
     }
     elseif ($Ensure -eq 'Absent') {
 
+        Write-Verbose 'Processing "ROALab\ROALabDatabaseAgent".';
         ROADatabaseAgent 'ROALabDatabaseAgent' {
             DatabaseServer = $DatabaseServer;
             DatabaseName = $DatabaseName;
@@ -152,7 +160,8 @@ configuration ROALab {
             Ensure = $Ensure;
         }
 
-        ROADispatcher 'ROALabDispatcher' {
+         Write-Verbose 'Processing "ROALab\ROALabDispatcher".';
+         ROADispatcher 'ROALabDispatcher' {
             DatabaseServer = $DatabaseServer;
             DatabaseName = $DatabaseName;
             Path = $Path;
@@ -163,6 +172,7 @@ configuration ROALab {
             DependsOn = '[ROADatabaseAgent]ROALabDatabaseAgent';
         }
 
+        Write-Verbose 'Processing "ROALab\ROALabDatabase".';
         ROADatabase 'ROALabDatabase' {
             DatabaseServer = $DatabaseServer;
             DatabaseName = $DatabaseName;
@@ -177,6 +187,7 @@ configuration ROALab {
 
     }
 
+    Write-Verbose 'Processing "ROALab\RESONEAutomationFirewall".';
     xFirewall 'RESONEAutomationFirewall' {
         Name = 'RESONEAutomation-TCP-3163-In';
         Group = 'RES ONE Automation';
@@ -192,6 +203,7 @@ configuration ROALab {
         DependsOn = '[ROADispatcher]ROALabDispatcher';
     }
 
+    Write-Verbose 'Processing "ROALab\RESONEAutomationDiscoveryFirewall".';
     xFirewall 'RESONEAutomationDiscoveryFirewall' {
         Name = 'RESONEAutomation-UDP-3163-In';
         Group = 'RES ONE Automation';
@@ -206,5 +218,7 @@ configuration ROALab {
         Ensure = $Ensure;
         DependsOn = '[ROADispatcher]ROALabDispatcher';
     }
+
+    Write-Verbose 'Ending "ROALab".';
 
 } #end configuration ROALab
