@@ -7,7 +7,10 @@
     Copyright          = '(c) 2016 Virtual Engine Limited. All rights reserved.';
     Description        = 'RES ONE Automation PowerShell cmdlets and configuration composite DSC resources. These resources are provided AS IS, and are not supported through any means.';
     FunctionsToExport  = @('Get-ROAEnvironmentGuid','Get-ROASiteLicense','Import-ROABuildingBlock');
-    # DscResourcesToExport = @('ROAAgent', 'ROABuildingBlock', 'ROAConsole', 'ROADatabase', 'ROADatabaseAgent','ROADispatcher');
+
+    <# Removed for WMF 4 compaitibilty
+    DscResourcesToExport = @('ROAAgent','ROABuildingBlock','ROAConsole','ROADatabase','ROADatabaseAgent',
+                                'ROADispatcher'); #>
 
     PrivateData = @{
         PSData = @{
