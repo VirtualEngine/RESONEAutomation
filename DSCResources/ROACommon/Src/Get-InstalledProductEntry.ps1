@@ -5,22 +5,28 @@ function Get-InstalledProductEntry {
 #>
     [CmdletBinding()]
     param (
-        [Parameter()] [ValidateNotNullOrEmpty()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Name,
 
-        [Parameter()] [ValidateNotNullOrEmpty()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String] $IdentifyingNumber,
 
-        [Parameter()] [ValidateNotNullOrEmpty()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String] $InstalledCheckRegHive = 'LocalMachine',
 
-        [Parameter()] [ValidateNotNullOrEmpty()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String] $InstalledCheckRegKey,
 
-        [Parameter()] [ValidateNotNullOrEmpty()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String] $InstalledCheckRegValueName,
 
-        [Parameter()] [ValidateNotNullOrEmpty()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String] $InstalledCheckRegValueData
     )
     process {
@@ -39,7 +45,11 @@ function Get-InstalledProductEntry {
         }
 
         foreach ($item in (Get-ChildItem -ErrorAction Ignore $uninstallKey, $uninstallKeyWow64)) {
-            if ($Name -eq (Get-LocalizableRegistryKeyValue $item 'DisplayName')) {
+            $installedProduct = Get-LocalizableRegistryKeyValue -RegistryKey $item -ValueName 'DisplayName';
+            if ($installedProduct) {
+                $installedProduct = $installedProduct.Trim();
+            }
+            if ($Name -eq $installedProduct) {
                 return $item;
             }
         }

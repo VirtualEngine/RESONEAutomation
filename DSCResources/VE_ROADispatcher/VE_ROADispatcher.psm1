@@ -49,17 +49,7 @@ function Get-TargetResource {
 
     $setupPath = Resolve-ROAPackagePath -Path $Path -Component 'Dispatcher' -Version $Version -IsLiteralPath:$IsLiteralPath -Verbose:$Verbose;
     [System.String] $msiProductName = Get-WindowsInstallerPackageProperty -Path $setupPath -Property ProductName;
-
-    ## Product name appeared to changed in SR3, i.e. 'RES ONE Automation 2015 SR3 Dispatcher+(x64) '
-    ## NOTE: THERE IS A SPACE ON THE END OF THE PRODUCT NAME?! Assumption at the moment is this is a one-of..
-    [System.String] $msiProductVersion = Get-WindowsInstallerPackageProperty -Path $setupPath -Property ProductVersion;
-    $productVersion = $msiProductVersion -as [System.Version];
-    if (($productVersion.Major -eq 7) -and ($productVersion.Minor -eq 5) -and ($productVersion.Build -eq 3)) {
-        $productName = $msiProductName.TrimStart();
-    }
-    else {
-        $productName = $msiProductName.Trim();
-    }
+    $productName = $msiProductName.Trim();
 
     $targetResource = @{
         Path = $setupPath;
