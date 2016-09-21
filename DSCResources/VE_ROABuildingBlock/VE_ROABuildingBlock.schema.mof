@@ -4,4 +4,5 @@ class VE_ROABuildingBlock : OMI_BaseResource
     [Key, Description("RES ONE Automation building block file path")] String Path;
     [Required, Description("RES ONE Automation user credential"), EmbeddedInstance("MSFT_Credential")] String Credential;
     [Write, Description("RES ONE Automation credential is a RES ONE Automation user")] Boolean IsRESONEAutomationCredential;
+    [Write, Description("Delete the source building block file after import")] Boolean DeleteFromDisk;
 };

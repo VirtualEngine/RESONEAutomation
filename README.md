@@ -42,6 +42,7 @@ ROABuildingBlock [String] #ResourceName
     Path = [String]
     [ Credential = [PSCredential] ]
     [ IsRESONEAutomationCredential = [Boolean] ]
+    [ DeleteFromDisk = [Boolean] ]
 }
 ```
 
@@ -138,6 +139,7 @@ ROALab [String] #ResourceName
     [ BuildingBlockPath = [String] ]
     [ BuildingBlockCredential = [PSCredential] ]
     [ IsBuildingBlockCredentialRESONEAutomationUser = [Boolean] ]
+    [ DeleteBuildingBlock = [Boolean] ]
     [ Ensure = [String] { Absent | Present } ]
 }
 ```

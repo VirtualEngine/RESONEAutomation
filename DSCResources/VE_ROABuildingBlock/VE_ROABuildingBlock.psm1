@@ -8,6 +8,7 @@ data localizedData {
         ResourceInDesiredState         = Resource '{0}' is in the desired state.
         ResourceNotInDesiredState      = Resource '{0}' is NOT in the desired state.
         ImportingBuildingBlock         = Importing building block '{0}'.
+        DeletingBuildingBlock          = Deleting building block '{0}'.
 '@
 }
 
@@ -101,7 +102,11 @@ function Get-TargetResource {
 
         ## Credential supplied is an internal RES ONE Automation user.
         [Parameter()]
-        [System.Boolean] $IsRESONEAutomationCredential
+        [System.Boolean] $IsRESONEAutomationCredential,
+
+        ## Delete the building block from disk after import.
+        [Parameter()]
+        [System.Boolean] $DeleteFromDisk
     )
     process {
 
@@ -127,7 +132,11 @@ function Test-TargetResource {
         [System.Management.Automation.Credential()] $Credential,
 
         [Parameter()]
-        [System.Boolean] $IsRESONEAutomationCredential
+        [System.Boolean] $IsRESONEAutomationCredential,
+
+        ## Delete the building block from disk after import.
+        [Parameter()]
+        [System.Boolean] $DeleteFromDisk
     )
     process {
 
@@ -178,7 +187,11 @@ function Set-TargetResource {
         [System.Management.Automation.Credential()] $Credential,
 
         [Parameter()]
-        [System.Boolean] $IsRESONEAutomationCredential
+        [System.Boolean] $IsRESONEAutomationCredential,
+
+        ## Delete the building block from disk after import.
+        [Parameter()]
+        [System.Boolean] $DeleteFromDisk
     )
     process {
 
@@ -199,6 +212,11 @@ function Set-TargetResource {
 
                     ## Update the registry/hash value
                     SetBuildingBlockFileHash -RegistryName $bb.RegistryName -FileHash $bb.FileHash;
+
+                    if ($DeleteFromDisk) {
+                        Write-Verbose -Message ($localizedData.DeletingBuildingBlock -f $bb.Path);
+                        Remove-Item -Path $bb.Path -Force;
+                    }
                 }
                 catch {
 
