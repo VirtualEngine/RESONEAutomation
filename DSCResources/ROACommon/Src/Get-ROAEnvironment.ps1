@@ -53,7 +53,8 @@ function Get-ROAEnvironment {
             [ref] $null = $sqlDataAdapter.Fill($dataSet);
 
             $sqlConnection.Close();
-            return ([System.Guid]::New($dataSet.Tables[0].License));
+            $roaEnvironmentGuid = New-Object -TypeName System.Guid($dataSet.Tables[0].License);
+            return $roaEnvironmentGuid;
 
         }
         catch {
