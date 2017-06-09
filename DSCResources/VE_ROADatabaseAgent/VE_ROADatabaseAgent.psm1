@@ -63,6 +63,10 @@ function Get-TargetResource {
         [ValidateNotNullOrEmpty()]
         [System.String[]] $InvokeProject,
 
+        ## Inherit RES ONE Automation Dispatcher settings
+        [Parameter()]
+        [System.Boolean] $InheritSettings = $true,
+
         ## RES ONE Automation component version to be installed, i.e. 8.0.3.0
         [Parameter()]
         [ValidateNotNullOrEmpty()]
@@ -144,6 +148,10 @@ function Test-TargetResource {
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String[]] $InvokeProject,
+
+        ## Inherit RES ONE Automation Dispatcher settings
+        [Parameter()]
+        [System.Boolean] $InheritSettings = $true,
 
         ## RES ONE Automation component version to be installed, i.e. 8.0.3.0
         [Parameter()]
@@ -227,6 +235,10 @@ function Set-TargetResource {
         [ValidateNotNullOrEmpty()]
         [System.String[]] $InvokeProject,
 
+        ## Inherit RES ONE Automation Dispatcher settings
+        [Parameter()]
+        [System.Boolean] $InheritSettings = $true,
+
         ## RES ONE Automation component version to be installed, i.e. 8.0.3.0
         [Parameter()]
         [ValidateNotNullOrEmpty()]
@@ -256,16 +268,23 @@ function Set-TargetResource {
             ('DISPATCHERGETLIST="{0}"' -f [System.Int32] $DownloadDispatcherList)
         )
 
+        if ($InheritSettings -eq $true) {
+            $arguments += 'ISDEFDL=1';  # Specifies whether the new Agent should use the default/global Dispatcher list when it comes online.
+            $arguments += 'ISDEFDLS=1'; # Specifies whether the new Agent should use the default/global Dispatcher location settings when it comes online.
+            $arguments += 'ISDEFDR=1';  # Specifies whether the new Agent should use the default/global Dispatcher recovery settings when it comes online.
+        }
+
         if ($PSBoundParameters.ContainsKey('DispatcherList')) {
             $arguments += 'DISPATCHERLIST="{0}"' -f ($DispatcherList -join ';');
         }
+
         if ($PSBoundParameters.ContainsKey('AddToTeam')) {
             $arguments += 'ADDTOTEAM="{0}"' -f ($AddToTeam -join ';');
         }
+        
         if ($PSBoundParameters.ContainsKey('InvokeProject')) {
             $arguments += 'INVOKEPROJECT="{0}"' -f ($InvokeProject -join ';');
         }
-
     }
     elseif ($Ensure -eq 'Absent') {
 

@@ -10,6 +10,7 @@ class VE_ROADatabaseAgent : OMI_BaseResource
     [Write, Description("Download all RES ONE Automation dispatchers from database")] Boolean DownloadDispatcherList;
     [Write, Description("Add agent to specified RES ONE Automation team")] String AddToTeam[];
     [Write, Description("Invoke one or more RES ONE Automation modules/projects")] String InvokeProject[];
+    [Write, Description("Inherit RES ONE Automation dispatcher settings")] Boolean InheritSettings;
     [Write, Description("Install the specified RES ONE Automation agent version")] String Version;
     [Write, Description("Specified path is a literal file reference")] Boolean IsLiteralPath;
     [Write, ValueMap{"Present", "Absent"},Values{"Present", "Absent"}] String Ensure;

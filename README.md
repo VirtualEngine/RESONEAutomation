@@ -27,6 +27,7 @@ ROAAgent [String] #ResourceName
     [ DispatcherList = [String[]] ]
     [ DownloadDispatcherList = [Bool] ]
     [ InvokeProject = [String[]] ]
+    [ InheritSettings = [Bool] ]
     [ UseAutodetectFirst = [Bool] ]
     [ Ensure = [String] { Absent | Present } ]
 }
@@ -82,7 +83,7 @@ ROADatabase [String] #ResourceName
 }
 ```
 
-ROAAgent
+ROADatabaseAgent
 ================
 Installs a RES ONE Automation Agent, querying the database for the Site Id.
 ### Syntax
@@ -99,6 +100,7 @@ ROAAgent [String] #ResourceName
     [ DispatcherList = [String[]] ]
     [ DownloadDispatcherList = [Bool] ]
     [ InvokeProject = [String[]] ]
+    [ InheritSettings = [Bool] ]
     [ UseAutodetectFirst = [Bool] ]
     [ Ensure = [String] { Absent | Present } ]
 }
