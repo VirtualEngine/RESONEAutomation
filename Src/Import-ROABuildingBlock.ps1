@@ -51,11 +51,6 @@ function Import-ROABuildingBlock {
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $Force
     )
-    begin {
-
-        $wmcPath = Get-ROAConsolePath;
-
-    }
     process {
 
         $paths = @()

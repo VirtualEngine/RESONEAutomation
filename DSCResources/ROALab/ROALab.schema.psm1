@@ -8,6 +8,7 @@ configuration ROALab {
         7.5.0.0 is RES ONE Automation 2015
         7.5.1.0 is RES ONE Automation 2015 SR1
 #>
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '')]
     param (
         ## RES ONE Automation database server name/instance (equivalient to DBSERVER).
         [Parameter(Mandatory)]
