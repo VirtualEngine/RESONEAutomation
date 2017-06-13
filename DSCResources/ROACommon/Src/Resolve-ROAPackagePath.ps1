@@ -11,7 +11,7 @@ function Resolve-ROAPackagePath {
 
         ## Required RES ONE Automation/Automation Manager component
         [Parameter(Mandatory)]
-        [ValidateSet('Console','Dispatcher','Agent','Installer','AgentPlus')]
+        [ValidateSet('Console','Dispatcher','Agent','Installer','AgentPlus','ManagementPortal')]
         [System.String] $Component,
 
         ## RES ONE Automation component version to be installed, i.e. 7.0.4 or 7.5.3.1
@@ -39,6 +39,14 @@ function Resolve-ROAPackagePath {
 
             throw ($localizedData.InvalidVersionNumberFormatError -f $Version);
         }
+        else {
+
+            $versionMajor = $Version.Split('.')[0] -as [System.Int32];
+            if (($Component -in 'AgentPlus','ManagementPortal') -and ($versionMajor -lt 10)) {
+                
+                throw ($localizedData.InvalidComponentVersionError -f $Component, 10);
+            }
+        }
 
         if ($IsLiteralPath) {
 
@@ -56,7 +64,7 @@ function Resolve-ROAPackagePath {
 
                         0 {
 
-                            ## ProductName is only used by the 'Installer' component
+                            ## ProductName is only used by the 'Installer' and 'ManagementPortal' component
                             $productName = 'RES ONE Automation';
                             ## PackageName is used by all other components
                             $packageName = 'RES-ONE-Automation';
@@ -175,6 +183,13 @@ function Resolve-ROAPackagePath {
                     $regex = '{0}-Dispatcher\+\({1}\)-{2}.msi' -f $packageName, $architecture, $versionRegex;
 
                 } #end switch Dispatcher
+
+                'ManagementPortal' {
+
+                    ## RES ONE Automation Management Portal 10.0.100.0.msi
+                    $regex = '{0} Management Portal {1}.msi' -f $productName, $versionRegex;
+                    
+                }
 
                 Default {
 

@@ -11,7 +11,7 @@ Describe 'RESONEAutomation\ROACommon\Resolve-ROAPackagePath' {
 
         $result = Resolve-ROAPackagePath -Path $TestDrive -Component Installer -Version 7.5;
 
-        $result | Should -Match ('{0}$' -f $v75InstallerMsi);
+        $result.EndsWith($v75InstallerMsi) | Should Be $true;
     }
 
     It 'Should resolve later v7.5.5 installer' {
@@ -73,6 +73,26 @@ Describe 'RESONEAutomation\ROACommon\Resolve-ROAPackagePath' {
         $result = Resolve-ROAPackagePath -Path $TestDrive -Component AgentPlus -Version 10.0;
 
         $result.EndsWith($v10AgentPlusMsi) | Should Be $true;
+    }
+
+    It 'Should throw when "AgentPlus" component is specified on versions prior to v10' {
+
+        { Resolve-ROAPackagePath -Path $TestDrive -Component AgentPlus -Version 7.5 } | Should Throw 'Version 10 is required';
+    }
+
+    It 'Should throw when "ManagementPortal" component is specified on versions prior to v10' {
+
+        { Resolve-ROAPackagePath -Path $TestDrive -Component ManagementPortal -Version 7.5 } | Should Throw 'Version 10 is required';
+    }
+
+    It 'Should resolve v10.0.0.0 Management Portal installer' {
+        
+        $v10100InstallerMsi = 'RES ONE Automation Management Portal 10.0.100.0.msi';
+        New-Item -Path $TestDrive -Name $v10100InstallerMsi -ItemType File -Force -ErrorAction SilentlyContinue;
+
+        $result = Resolve-ROAPackagePath -Path $TestDrive -Component ManagementPortal -Version 10.0;
+
+        $result.EndsWith($v10100InstallerMsi) | Should Be $true;
     }
 
 } #end describe

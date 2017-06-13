@@ -16,6 +16,7 @@ data localizedData {
         CannotFindPathError             = Cannot find path '{0}' because it does not exist.
         ROAComponentNotFoundError       = RES ONE Automation component '{0}' was not found.
         ROAConsoleNotFoundError         = RES ONE Automation console was not found.
+        InvalidComponentVersionError    = Component '{0}' is not supported in this version. Version {1} is required.
 '@
 }
 

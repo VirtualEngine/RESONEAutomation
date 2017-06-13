@@ -10,6 +10,7 @@ RES ONE Automation DSC Resources
 * **ROADatabaseAgent**: Installs a RES ONE Automation Agent, querying the database for the Site Id
 * **ROADispatcher**: Deploys a RES ONE Automation Dispatcher
 * **ROALab (Composite)**: Deploys a single-node RES ONE Automation server lab environment
+* **ROAManagementPortal**: Deploys the RES ONE Automation v10 (and later) web management portal
 
 ### Required Resources
 
@@ -169,5 +170,24 @@ ROALab [String] #ResourceName
     [ IsBuildingBlockCredentialRESONEAutomationUser = [Boolean] ]
     [ DeleteBuildingBlock = [Boolean] ]
     [ Ensure = [String] { Absent | Present } ]
+}
+```
+
+ROAManagementPortal
+===================
+
+Installs the RES ONE Automation v10 (and later) web management portal component.
+
+### Syntax
+
+```
+ROAManagementPortal [String] #ResourceName
+{
+    Hostname = [String]
+    CertificateThumbprint = [String]
+    Path = [String]
+    [ Version = [String] ]
+    [ IsLiteralPath = [Boolean] ]
+    [ Ensure = [String] { Absent | Present }]
 }
 ```
