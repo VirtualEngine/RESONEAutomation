@@ -12,6 +12,7 @@ function Assert-ROAComponent {
     process {
 
         if (-not (Get-ROAComponentInstallPath -Component $Component)) {
+            
             throw ($localizedData.ROAComponentNotFoundError -f $Component);
         }
 

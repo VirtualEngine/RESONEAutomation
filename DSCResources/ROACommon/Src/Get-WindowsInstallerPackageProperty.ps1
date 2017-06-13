@@ -26,6 +26,7 @@ function Get-WindowsInstallerPackageProperty {
     begin {
 
         if ($PSCmdlet.ParameterSetName -eq 'Path') {
+
             $LiteralPath += $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path);
         }
 
@@ -46,6 +47,7 @@ function Get-WindowsInstallerPackageProperty {
 
         }
         catch {
+            
             throw;
         }
 

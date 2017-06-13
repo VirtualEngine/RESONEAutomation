@@ -14,6 +14,7 @@ function Get-ROAConsolePath {
         $wmcRootPath = Get-ROAComponentInstallPath -Component 'Console';
         $wmcPath = Join-Path -Path $wmcRootPath -ChildPath 'wmc.exe';
         if (-not (Test-Path -Path $wmcPath -PathType Leaf)) {
+            
             throw ($localizedData.ROAConsoleNotFoundError);
         }
         return $wmcPath;

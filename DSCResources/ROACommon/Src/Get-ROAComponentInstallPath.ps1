@@ -15,16 +15,22 @@ function Get-ROAComponentInstallPath {
         $installedProducts = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*',
                                 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*';
         $resProducts = $installedProducts |
-            Where-Object { $_.DisplayName -match '^RES' -and $_.DisplayName -match 'Automation' }
+                            Where-Object { $_.DisplayName -match '^RES' -and $_.DisplayName -match 'Automation' }
 
         if ($Component -eq 'Agent') {
-            $resProduct = $resProducts | Where-Object { $_.DisplayName -match 'Agent' }
+
+            $resProduct = $resProducts |
+                            Where-Object { $_.DisplayName -match 'Agent' }
         }
         elseif ($Component -eq 'Console') {
-            $resProduct = $resProducts | Where-Object { $_.DisplayName -notmatch 'Agent' -and $_.DisplayName -notmatch 'Dispatcher' }
+
+            $resProduct = $resProducts |
+                            Where-Object { $_.DisplayName -notmatch 'Agent' -and $_.DisplayName -notmatch 'Dispatcher' }
         }
         elseif ($Component -eq 'Dispatcher') {
-            $resProduct = $resProducts | Where-Object { $_.DisplayName -match 'Dispatcher' }
+
+            $resProduct = $resProducts |
+                            Where-Object { $_.DisplayName -match 'Dispatcher' }
         }
 
         return $resProduct.InstallLocation;

@@ -43,14 +43,15 @@ function Start-WaitProcess {
 
         $displayParams = '<None>';
         if ($ArgumentList) {
+
             $arguments = [System.String]::Join(' ', $ArgumentList);
             $displayParams = $arguments;
             $startInfo.Arguments = $arguments;
         }
 
-
         try {
-            if($PSBoundParameters.ContainsKey('Credential')) {
+
+            if ($PSBoundParameters.ContainsKey('Credential')) {
 
                 $commandLine = '"{0}" {1}' -f $startInfo.FileName, $startInfo.Arguments;
                 Write-Verbose ($localizedData.StartingProcessAs -f $FilePath, $displayParams, $Credential.UserName);
@@ -70,6 +71,7 @@ function Start-WaitProcess {
                 $process.WaitForExit();
 
                 if ($process) {
+
                     $exitCode = $process.ExitCode;
                 }
             }
@@ -79,7 +81,7 @@ function Start-WaitProcess {
         }
         catch {
 
-            throw $_;
+            throw;
         }
 
     } #end process

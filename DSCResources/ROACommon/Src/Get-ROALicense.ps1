@@ -41,7 +41,7 @@ function Get-ROALicense {
         }
         catch {
 
-            throw $_;
+            throw;
         }
 
     } #end process

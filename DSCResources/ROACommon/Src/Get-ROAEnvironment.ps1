@@ -59,7 +59,7 @@ function Get-ROAEnvironment {
         }
         catch {
 
-            throw $_;
+            throw;
         }
 
     } #end process
