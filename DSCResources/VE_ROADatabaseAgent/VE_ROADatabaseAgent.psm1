@@ -72,6 +72,11 @@ function Get-TargetResource {
         [ValidateNotNullOrEmpty()]
         [System.String] $Version,
 
+        ## Use RES ONE Automation v10 (and later) Agent+ binaries
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.SwitchParameter] $IsAgentPlus,
+
         ## The specified Path is a literal file reference (bypasses the $Versioncheck).
         [Parameter()]
         [ValidateNotNull()]
@@ -82,7 +87,15 @@ function Get-TargetResource {
         [System.String] $Ensure = 'Present'
     )
 
-    $setupPath = Resolve-ROAPackagePath -Path $Path -Component 'Agent' -Version $Version -IsLiteralPath:$IsLiteralPath -Verbose:$Verbose;
+    $resolveROAPackagePathParams = @{
+        Path = $Path;
+        Component = if ($IsAgentPlus) { 'AgentPlus' } else { 'Agent' };
+        Version = $Version;
+        IsLiteralPath = $IsLiteralPath
+        Verbose = $Verbose;
+    }
+    $setupPath = Resolve-ROAPackagePath @resolveROAPackagePathParams;
+
     [System.String] $msiProductName = Get-WindowsInstallerPackageProperty -Path $setupPath -Property ProductName;
     $productName = $msiProductName.Trim();
 
@@ -158,6 +171,11 @@ function Test-TargetResource {
         [ValidateNotNullOrEmpty()]
         [System.String] $Version,
 
+        ## Use RES ONE Automation v10 (and later) Agent+ binaries
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.SwitchParameter] $IsAgentPlus,
+
         ## The specified Path is a literal file reference (bypasses the $Versioncheck).
         [Parameter()]
         [ValidateNotNull()]
@@ -169,12 +187,15 @@ function Test-TargetResource {
     )
 
     $targetResource = Get-TargetResource @PSBoundParameters;
+
     if ($Ensure -ne $targetResource.Ensure) {
+
         Write-Verbose -Message ($localizedData.ResourceIncorrectPropertyState -f 'Ensure', $Ensure, $targetResource.Ensure);
         Write-Verbose -Message ($localizedData.ResourceNotInDesiredState -f $targetResource.ProductName);
         return $false;
     }
     else {
+
         Write-Verbose -Message ($localizedData.ResourceInDesiredState -f $targetResource.ProductName);
         return $true;
     }
@@ -244,6 +265,11 @@ function Set-TargetResource {
         [ValidateNotNullOrEmpty()]
         [System.String] $Version,
 
+        ## Use RES ONE Automation v10 (and later) Agent+ binaries
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.SwitchParameter] $IsAgentPlus,
+
         ## The specified Path is a literal file reference (bypasses the $Versioncheck).
         [Parameter()]
         [ValidateNotNull()]
@@ -254,7 +280,15 @@ function Set-TargetResource {
         [System.String] $Ensure = 'Present'
     )
 
-    $setupPath = Resolve-ROAPackagePath -Path $Path -Component 'Agent' -Version $Version -IsLiteralPath:$IsLiteralPath -Verbose:$Verbose;
+    $resolveROAPackagePathParams = @{
+        Path = $Path;
+        Component = if ($IsAgentPlus) { 'AgentPlus' } else { 'Agent' };
+        Version = $Version;
+        IsLiteralPath = $IsLiteralPath
+        Verbose = $Verbose;
+    }
+    $setupPath = Resolve-ROAPackagePath @resolveROAPackagePathParams;
+
     if ($Ensure -eq 'Present') {
 
         Write-Verbose -Message ($localizedData.QueryingSiteId -f $DatabaseServer, $DatabaseName);
@@ -269,20 +303,24 @@ function Set-TargetResource {
         )
 
         if ($InheritSettings -eq $true) {
+
             $arguments += 'ISDEFDL=1';  # Specifies whether the new Agent should use the default/global Dispatcher list when it comes online.
             $arguments += 'ISDEFDLS=1'; # Specifies whether the new Agent should use the default/global Dispatcher location settings when it comes online.
             $arguments += 'ISDEFDR=1';  # Specifies whether the new Agent should use the default/global Dispatcher recovery settings when it comes online.
         }
 
         if ($PSBoundParameters.ContainsKey('DispatcherList')) {
+
             $arguments += 'DISPATCHERLIST="{0}"' -f ($DispatcherList -join ';');
         }
 
         if ($PSBoundParameters.ContainsKey('AddToTeam')) {
+
             $arguments += 'ADDTOTEAM="{0}"' -f ($AddToTeam -join ';');
         }
         
         if ($PSBoundParameters.ContainsKey('InvokeProject')) {
+
             $arguments += 'INVOKEPROJECT="{0}"' -f ($InvokeProject -join ';');
         }
     }

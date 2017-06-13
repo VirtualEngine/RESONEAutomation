@@ -14,34 +14,39 @@ function Get-TargetResource {
     [OutputType([System.Collections.Hashtable])]
     param (
         ## RES ONE Automation database server name/instance (equivalient to DBSERVER).
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
         [System.String] $SiteId,
 
         ## File path containing the RES ONE Automation MSIs or the literal path to the Agent MSI.
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
         [System.String] $Path,
 
         ## By default, the Agent will autodetect Dispatchers. To use a fixed list of Dispatchers instead, use
         ## this parameter to specify the names or GUIDs of Dispatchers to use. Separate multiple entries with a semi-colon (;).
-        [Parameter()] [ValidateNotNullOrEmpty()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String[]] $DispatcherList,
 
         ## Should the agent try autodetecting Dispatchers before using the $DispatcherList
-        [Parameter()] [ValidateNotNull()]
+        [Parameter()]
+        [ValidateNotNull()]
         [System.Boolean] $UseAutodetectFirst = $true,
 
         ## Should the agent extend its list of Dispatchers by downloading a list of all Dispatchers.
-        [Parameter()] [ValidateNotNull()]
+        [Parameter()]
+        [ValidateNotNull()]
         [System.Boolean] $DownloadDispatcherList = $false,
 
         ## To add the Agent as a member of one or more Teams, use this property to specify the names or GUIDs
         ## of the Teams. Separate multiple entries with a semi-colon (;).
-        [Parameter()] [ValidateNotNullOrEmpty()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String[]] $AddToTeam,
 
         ## To run one or more Modules, Projects or Run Books on the new Agent as soon as it comes online, use this property
         ## to specify the GUIDs.
-        [Parameter()] [ValidateNotNullOrEmpty()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String[]] $InvokeProject,
 
         ## Inherit RES ONE Automation Dispatcher settings
@@ -49,18 +54,34 @@ function Get-TargetResource {
         [System.Boolean] $InheritSettings = $true,
 
         ## RES ONE Automation component version to be installed, i.e. 8.0.3.0
-        [Parameter()] [ValidateNotNullOrEmpty()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Version,
 
+        ## Use RES ONE Automation v10 (and later) Agent+ binaries
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.SwitchParameter] $IsAgentPlus,
+
         ## The specified Path is a literal file reference (bypasses the $Versioncheck).
-        [Parameter()] [ValidateNotNull()]
+        [Parameter()]
+        [ValidateNotNull()]
         [System.Management.Automation.SwitchParameter] $IsLiteralPath,
 
-        [Parameter()] [ValidateSet('Present','Absent')]
+        [Parameter()]
+        [ValidateSet('Present','Absent')]
         [System.String] $Ensure = 'Present'
     )
 
-    $setupPath = Resolve-ROAPackagePath -Path $Path -Component 'Agent' -Version $Version -IsLiteralPath:$IsLiteralPath -Verbose:$Verbose;
+    $resolveROAPackagePathParams = @{
+        Path = $Path;
+        Component = if ($IsAgentPlus) { 'AgentPlus' } else { 'Agent' };
+        Version = $Version;
+        IsLiteralPath = $IsLiteralPath
+        Verbose = $Verbose;
+    }
+    $setupPath = Resolve-ROAPackagePath @resolveROAPackagePathParams;
+
     [System.String] $msiProductName = Get-WindowsInstallerPackageProperty -Path $setupPath -Property ProductName;
     $productName = $msiProductName.Trim();
 
@@ -117,6 +138,11 @@ function Test-TargetResource {
         ## RES ONE Automation component version to be installed, i.e. 8.0.3.0
         [Parameter()] [ValidateNotNullOrEmpty()]
         [System.String] $Version,
+
+        ## Use RES ONE Automation v10 (and later) Agent+ binaries
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.SwitchParameter] $IsAgentPlus,
 
         ## The specified Path is a literal file reference (bypasses the $Versioncheck).
         [Parameter()] [ValidateNotNull()]
@@ -183,6 +209,11 @@ function Set-TargetResource {
         [Parameter()] [ValidateNotNullOrEmpty()]
         [System.String] $Version,
 
+        ## Use RES ONE Automation v10 (and later) Agent+ binaries
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.SwitchParameter] $IsAgentPlus,
+
         ## The specified Path is a literal file reference (bypasses the $Versioncheck).
         [Parameter()] [ValidateNotNull()]
         [System.Management.Automation.SwitchParameter] $IsLiteralPath,
@@ -191,7 +222,15 @@ function Set-TargetResource {
         [System.String] $Ensure = 'Present'
     )
 
-    $setupPath = Resolve-ROAPackagePath -Path $Path -Component 'Agent' -Version $Version -IsLiteralPath:$IsLiteralPath -Verbose:$Verbose;
+    $resolveROAPackagePathParams = @{
+        Path = $Path;
+        Component = if ($IsAgentPlus) { 'AgentPlus' } else { 'Agent' };
+        Version = $Version;
+        IsLiteralPath = $IsLiteralPath
+        Verbose = $Verbose;
+    }
+    $setupPath = Resolve-ROAPackagePath @resolveROAPackagePathParams;
+
     if ($Ensure -eq 'Present') {
 
         $arguments = @(
@@ -202,20 +241,24 @@ function Set-TargetResource {
         )
 
         if ($InheritSettings -eq $true) {
+
             $arguments += 'ISDEFDL=1';  # Specifies whether the new Agent should use the default/global Dispatcher list when it comes online.
             $arguments += 'ISDEFDLS=1'; # Specifies whether the new Agent should use the default/global Dispatcher location settings when it comes online.
             $arguments += 'ISDEFDR=1';  # Specifies whether the new Agent should use the default/global Dispatcher recovery settings when it comes online.
         }
 
         if ($PSBoundParameters.ContainsKey('DispatcherList')) {
+
             $arguments += 'DISPATCHERLIST="{0}"' -f ($DispatcherList -join ';');
         }
         
         if ($PSBoundParameters.ContainsKey('AddToTeam')) {
+
             $arguments += 'ADDTOTEAM="{0}"' -f ($AddToTeam -join ';');
         }
         
         if ($PSBoundParameters.ContainsKey('InvokeProject')) {
+
             $arguments += 'INVOKEPROJECT="{0}"' -f ($InvokeProject -join ';');
         }
     }

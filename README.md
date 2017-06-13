@@ -1,7 +1,9 @@
 RES ONE Automation DSC Resources
 ================================
+
 ## Included Resources
-* **ROAAgent**: Deploys a RES ONE Automation agent
+
+* **ROAAgent**: Deploys a RES ONE Automation agent or v10 agent+
 * **ROABuildingBlock**: Imports a RES ONE Automation building block
 * **ROAConsole**: Installs the RES ONE Automation console
 * **ROADatabase**: Installs the RES ONE Automation console and creates a RES ONE Automation database
@@ -9,19 +11,24 @@ RES ONE Automation DSC Resources
 * **ROADispatcher**: Deploys a RES ONE Automation Dispatcher
 * **ROALab (Composite)**: Deploys a single-node RES ONE Automation server lab environment
 
-## Required Resources
+### Required Resources
+
 * **xNetworking**: ROALab requires https://github.com/PowerShell/xNetworking to create server firewall rules
 
 ROAAgent
 ========
-Deploys a RES ONE Automation agent.
+
+Deploys a RES ONE Automation agent or agent+.
+
 ### Syntax
+
 ```
 ROAAgent [String] #ResourceName
 {
     Path = [String]
     SiteId = [String]
     [ Version = [String] ]
+    [ IsAgentPlus = [Boolean] ]
     [ IsLiteralPath = [Boolean] ]
     [ AddToTeam = [String[]] ]
     [ DispatcherList = [String[]] ]
@@ -35,8 +42,11 @@ ROAAgent [String] #ResourceName
 
 ROABuildingBlock
 ===================
+
 Imports a RES ONE Automation building block.
+
 ### Syntax
+
 ```
 ROABuildingBlock [String] #ResourceName
 {
@@ -49,8 +59,11 @@ ROABuildingBlock [String] #ResourceName
 
 ROAConsole
 ==========
+
 Installs the RES ONE Automation console.
+
 ### Syntax
+
 ```
 ROAConsole [String] #ResourceName
 {
@@ -66,8 +79,11 @@ ROAConsole [String] #ResourceName
 
 ROADatabase
 ===========
+
 Installs the RES ONE Automation console and creates a RES ONE Automation database.
+
 ### Syntax
+
 ```
 ROADatabase [String] #ResourceName
 {
@@ -85,8 +101,11 @@ ROADatabase [String] #ResourceName
 
 ROADatabaseAgent
 ================
+
 Installs a RES ONE Automation Agent, querying the database for the Site Id.
+
 ### Syntax
+
 ```
 ROAAgent [String] #ResourceName
 {
@@ -95,6 +114,7 @@ ROAAgent [String] #ResourceName
     Credential = [PSCredential]
     Path = [String]
     [ Version = [String] ]
+    [ IsAgentPlus = [Boolean] ]
     [ IsLiteralPath = [Boolean] ]
     [ AddToTeam = [String[]] ]
     [ DispatcherList = [String[]] ]
@@ -109,8 +129,11 @@ ROAAgent [String] #ResourceName
 
 ROADispatcher
 =============
+
 Deploys a RES ONE Automation Dispatcher.
+
 ### Syntax
+
 ```
 ROADispatcher [String] #ResourceName
 {
@@ -127,8 +150,11 @@ ROADispatcher [String] #ResourceName
 
 ROALab
 ======
+
 Deploys a single-node RES ONE Automation lab server environment.
+
 ### Syntax
+
 ```
 ROALab [String] #ResourceName
 {
