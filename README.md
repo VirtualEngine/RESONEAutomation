@@ -11,6 +11,7 @@ RES ONE Automation DSC Resources
 * **ROADispatcher**: Deploys a RES ONE Automation Dispatcher
 * **ROALab (Composite)**: Deploys a single-node RES ONE Automation server lab environment
 * **ROAManagementPortal**: Deploys the RES ONE Automation v10 (and later) web management portal
+* **ROAManagementPortalConfiguration**: Creates a RES ONE Automation v10 (and later) web management portal configuration file
 
 ### Required Resources
 
@@ -188,6 +189,29 @@ ROAManagementPortal [String] #ResourceName
     Path = [String]
     [ Version = [String] ]
     [ IsLiteralPath = [Boolean] ]
-    [ Ensure = [String] { Absent | Present }]
+    [ Ensure = [String] { Absent | Present } ]
+}
+```
+
+ROAManagementPortalConfiguration
+================================
+
+Creates RES ONE Automation v10 (and later) web management portal configuration file.
+
+### Syntax
+
+```
+ROAManagementPortalConfiguration [String] #ResourceName
+{
+    Path = [string]
+    DatabaseServer = [String]
+    DatabaseName = [String]
+    [Credential = [PSCredential]]
+    [ApiKey = [String] ]
+    [IdentityBrokerUrl = [String] ]
+    [ApplicationUrl = [String] ]
+    [ClientId = [String] ]
+    [ClientSecret = [PSCredential]]
+    [Ensure = [string]{ Absent | Present } ]
 }
 ```

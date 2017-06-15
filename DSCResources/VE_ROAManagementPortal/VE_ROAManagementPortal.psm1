@@ -45,7 +45,7 @@ function Get-TargetResource {
         IsLiteralPath = $IsLiteralPath;
         Verbose = $Verbose;
     }
-    $setupPath = Resolve-ROWPackagePath @resolveROWPackagePathParams;
+    $setupPath = Resolve-ROAPackagePath @resolveROWPackagePathParams;
 
     [System.String] $msiProductName = Get-WindowsInstallerPackageProperty -Path $setupPath -Property ProductName;
     $productName = $msiProductName.Trim();
@@ -148,7 +148,7 @@ function Set-TargetResource {
         IsLiteralPath = $IsLiteralPath;
         Verbose = $Verbose;
     }
-    $setupPath = Resolve-ROWPackagePath @resolveROWPackagePathParams;
+    $setupPath = Resolve-ROAPackagePath @resolveROWPackagePathParams;
 
     if ($Ensure -eq 'Present') {
 

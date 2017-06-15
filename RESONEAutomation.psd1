@@ -9,7 +9,8 @@
     FunctionsToExport  = @(
                             'Get-ROAEnvironmentGuid',
                             'Get-ROASiteLicense',
-                            'Import-ROABuildingBlock'
+                            'Import-ROABuildingBlock',
+                            'New-ROAManagementPortalConfiguration'
                          );
 
     <# Removed for WMF 4 compaitibilty
