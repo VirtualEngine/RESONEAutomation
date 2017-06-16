@@ -3,7 +3,8 @@ function New-ROAManagementPortalConfiguration {
     .SYNOPSIS
         Creates a RES ONE Automation Management Portal web configuration file.
 #>
-    [CmdletBinding(DefaultParameterSetName = 'WindowsAuthentication')]
+    [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'WindowsAuthentication')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '')]
     param (
         ## Path to RES ONE Automation Management Portal web configuration file
         [Parameter(Mandatory, ValueFromPipeline)]
