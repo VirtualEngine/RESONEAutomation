@@ -163,7 +163,7 @@ function Get-TargetResource {
         IdentityBrokerUrl = $webConfig.webConsoleConfiguration.authentication.identityServer.serverUrl;
         ApplicationUrl = $webConfig.webConsoleConfiguration.authentication.identityServer.applicationUrl;
         ClientId = $webConfig.webConsoleConfiguration.authentication.identityServer.clientId;
-        ApiKey = ServerUrl = $webConfig.publicApi.;
+        ApiKey = $webConfig.webConsoleConfiguration.publicAPI.apiKey;
         Ensure = if (Test-Path -Path $Path -PathType Leaf) { 'Present' } else { 'Absent' }
     }
     return $targetResource;
@@ -232,15 +232,18 @@ function Test-TargetResource {
     }
     elseif ($Ensure -eq 'Present') {
     
-        if ($DatabaseServer -ne $targetResource.DatabaseServer) {
+        $checkParameterNames = @('DatabaseServer','DatabaseName','IdentityBrokerUrl','ApplicationUrl','ClientId','ApiKey')
+        
+        foreach ($parameter in $PSBoundParameters.GetEnumerator()) {
 
-            Write-Verbose -Message ($localizedData.ResourceIncorrectPropertyState -f 'DatabaseServer', $DatabaseServer, $targetResource.DatabaseServer);
-            $isInDesiredState = $false;
-        }
-        elseif ($DatabaseName -ne $targetResource.DatabaseName) {
+            if ($parameter.Key -in $checkParameterNames) {
 
-            Write-Verbose -Message ($localizedData.ResourceIncorrectPropertyState -f 'DatabaseName', $DatabaseName, $targetResource.DatabaseName);
-            $isInDesiredState = $false;
+                if ($parameter.Value -ne $targetResource[$parameter.Key]) {
+
+                    Write-Verbose -Message ($localizedData.ResourceIncorrectPropertyState -f $parameter.Key, $parameter.Value, $targetResource[$parameter.Key]);
+                    $isInDesiredState = $false;
+                }
+            }
         }
     }
 

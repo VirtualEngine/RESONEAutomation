@@ -28,7 +28,7 @@ function Save-ROAManagementPortalConfiguration {
 
         ## RES ONE Identity Broker server Uri.
         [Parameter(Mandatory, ParameterSetName = 'IdentityBroker')]
-        [System.String] $ServerUrl,
+        [System.String] $IdentityBrokerUrl,
 
         ## RES ONE Identity Broker application Uri.
         [Parameter(Mandatory, ParameterSetName = 'IdentityBroker')]
@@ -106,8 +106,8 @@ $webConsoleApiDisabledTemplate = @'
     if ($PSCmdlet.ParameterSetName -eq 'IdentityBroker') {
 
         $identityServer = $webConsoleSqlAuthenticationTemplate;
-        $identityServer = $identityServer.Replace('<#ServerUrl#>', $ServerUrl);
-        $identityServer = $identityServer.Replace('<#ApplicationUrl#>', $AppplicationUrl);
+        $identityServer = $identityServer.Replace('<#ServerUrl#>', $IdentityBrokerUrl);
+        $identityServer = $identityServer.Replace('<#ApplicationUrl#>', $ApplicationUrl);
         $identityServer = $identityServer.Replace('<#ClientId#>', $ClientId);
         $identityServer = $identityServer.Replace('<#ClientSecret#>', $ClientSecret.GetNetworkCredential().Password);
 

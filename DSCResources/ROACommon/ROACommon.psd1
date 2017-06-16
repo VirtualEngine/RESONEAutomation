@@ -20,6 +20,7 @@
                             'Import-ROABuildingBlockFile',
                             'Register-PInvoke',
                             'Resolve-ROAPackagePath',
+                            'Save-ROAManagementPortalConfiguration',
                             'Start-WaitProcess'
                         )
 }

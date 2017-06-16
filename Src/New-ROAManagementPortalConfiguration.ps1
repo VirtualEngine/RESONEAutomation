@@ -28,7 +28,7 @@ function New-ROAManagementPortalConfiguration {
 
         ## RES ONE Identity Broker server Uri.
         [Parameter(Mandatory, ParameterSetName = 'IdentityBroker')]
-        [System.String] $ServerUrl,
+        [System.String] $IdentityBrokerUrl,
 
         ## RES ONE Identity Broker application Uri.
         [Parameter(Mandatory, ParameterSetName = 'IdentityBroker')]
