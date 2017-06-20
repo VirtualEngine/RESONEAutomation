@@ -2,7 +2,7 @@
 class VE_ROAAgent : OMI_BaseResource
 {
     [Key, Description("RES ONE Automation database server/instance name")] String SiteId;
-    [Required, Description("Path to RES ONE Automation Agent")] String Path;
+    [Required, Description("File path containing the RES ONE Automation MSIs or the literal path to the installer")] String Path;
     [Write, Description("RES ONE Automation dispatcher list")] String DispatcherList[];
     [Write, Description("Attempt RES ONE Automation dispatcher discovery first")] Boolean UseAutodetectFirst;
     [Write, Description("Download all RES ONE Automation dispatchers from database")] Boolean DownloadDispatcherList;

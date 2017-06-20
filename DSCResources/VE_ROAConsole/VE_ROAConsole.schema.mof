@@ -3,7 +3,7 @@ class VE_ROAConsole : OMI_BaseResource
 {
     [Key, Description("RES ONE Automation database server/instance name")] String DatabaseServer;
     [Key, Description("RES ONE Automatino database name")] String DatabaseName;
-    [Required, Description("Path to RES ONE Automation Agent")] String Path;
+    [Required, Description("File path containing the RES ONE Automation MSIs or the literal path to the installer")] String Path;
     [Required, Description("Microsoft SQL username/password to create"), EmbeddedInstance("MSFT_Credential")] String Credential;
     [Write, Description("Install the specified RES ONE Automation agent version")] String Version;
     [Write, Description("Specified path is a literal file reference")] Boolean IsLiteralPath;
