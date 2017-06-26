@@ -3,15 +3,15 @@ RES ONE Automation DSC Resources
 
 ## Included Resources
 
-* **ROAAgent**: Deploys a RES ONE Automation agent or v10 agent+
+* **ROAAgent**: Deploys a RES ONE Automation agent or agent+ (v10 and later)
 * **ROABuildingBlock**: Imports a RES ONE Automation building block
 * **ROAConsole**: Installs the RES ONE Automation console
 * **ROADatabase**: Installs the RES ONE Automation console and creates a RES ONE Automation database
 * **ROADatabaseAgent**: Installs a RES ONE Automation Agent, querying the database for the Site Id
 * **ROADispatcher**: Deploys a RES ONE Automation Dispatcher
 * **ROALab (Composite)**: Deploys a single-node RES ONE Automation server lab environment
-* **ROAManagementPortal**: Deploys the RES ONE Automation v10 (and later) web management portal
-* **ROAManagementPortalConfig**: Creates a RES ONE Automation v10 (and later) web management portal configuration file
+* **ROAManagementPortal**: Deploys the RES ONE Automation (v10 and later) web management portal
+* **ROAManagementPortalConfig**: Creates a RES ONE Automation (v10 and later) web management portal configuration file
 
 ### Required Resources
 
@@ -20,7 +20,7 @@ RES ONE Automation DSC Resources
 ROAAgent
 ========
 
-Deploys a RES ONE Automation agent or agent+.
+Deploys a RES ONE Automation agent or agent+ (v10 and later).
 
 ### Syntax
 
@@ -177,16 +177,17 @@ ROALab [String] #ResourceName
 ROAManagementPortal
 ===================
 
-Installs the RES ONE Automation v10 (and later) web management portal component.
+Installs the RES ONE Automation (v10 and later) web management portal component.
 
 ### Syntax
 
 ```
 ROAManagementPortal [String] #ResourceName
 {
-    Hostname = [String]
+    HostHeader = [String]
     CertificateThumbprint = [String]
     Path = [String]
+    [ Port = [UInt16] ]
     [ Version = [String] ]
     [ IsLiteralPath = [Boolean] ]
     [ Ensure = [String] { Absent | Present } ]
@@ -196,7 +197,7 @@ ROAManagementPortal [String] #ResourceName
 ROAManagementPortalConfig
 =========================
 
-Creates RES ONE Automation v10 (and later) web management portal configuration file.
+Creates RES ONE Automation (v10 and later) web management portal configuration file.
 
 ### Syntax
 
