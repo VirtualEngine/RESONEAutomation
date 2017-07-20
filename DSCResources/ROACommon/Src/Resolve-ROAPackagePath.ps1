@@ -69,6 +69,11 @@ function Resolve-ROAPackagePath {
                             ## PackageName is used by all other components
                             $packageName = 'RES-ONE-Automation';
                         }
+                        1 {
+
+                            $productName = 'RES ONE Automation';
+                            $packageName = 'RES-ONE-Automation';
+                        }
                         Default {
 
                             throw ($localizedData.UnsupportedVersionError -f $productVersion.ToString());
