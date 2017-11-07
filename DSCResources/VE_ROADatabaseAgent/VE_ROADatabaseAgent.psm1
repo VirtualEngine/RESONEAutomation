@@ -4,7 +4,7 @@ data localizedData {
         ResourceIncorrectPropertyState  = Resource property '{0}' is NOT in the desired state. Expected '{1}', actual '{2}'.
         ResourceInDesiredState          = Resource '{0}' is in the desired state.
         ResourceNotInDesiredState       = Resource '{0}' is NOT in the desired state.
-        QueryingSiteId                  = Querying '{0}\{1}' database for Site Id.
+        QueryingSiteId                  = Querying '{0}\\{1}' database for Site Id.
         DiscoveredSiteId                = Discovered Site Id '{0}'.
 '@
 }

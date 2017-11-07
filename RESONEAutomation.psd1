@@ -1,10 +1,10 @@
 @{
     RootModule         = 'RESONEAutomation.psm1';
-    ModuleVersion      = '2.6.0';
+    ModuleVersion      = '2.6.1';
     GUID               = '7879d40d-210f-4ab0-b870-a219dd0e8110';
     Author             = 'Iain Brighton';
     CompanyName        = 'Virtual Engine';
-    Copyright          = '(c) 2016 Virtual Engine Limited. All rights reserved.';
+    Copyright          = '(c) 2017 Virtual Engine Limited. All rights reserved.';
     Description        = 'RES ONE Automation PowerShell cmdlets and configuration composite DSC resources. These resources are provided AS IS, and are not supported through any means.';
     FunctionsToExport  = @(
                             'Get-ROAEnvironmentGuid',
